@@ -25,10 +25,14 @@ Title: The Quadratic Approximation to NN Loss Landscapes: explorations and impli
     - save all batch indices used over the course of training
     - train 2 other networks, without lr decreases, starting at lower lr
 
+    relevant files: cifar10_test.py
+
 - Step 2: hessian computing
     - choose a few checkpoints, and compute the hessian at these points, with the whole dataset
     - maybe 4 checkpoints? should take 2 days of computing, save all these parameters
     - find the eigenvalues and eigenvectors of all these hessians
+
+    relevant files: HessianEigen_utils.py
 
 - Step 3: finding functional forms at minimum
     - at the found minimum, do line search in a selection of eigendirection and save the resulting functions
@@ -58,7 +62,21 @@ Title: The Quadratic Approximation to NN Loss Landscapes: explorations and impli
 
     - are the low eigenvalues caused by lots of examples having slight dependence in that direction, or a single, high-curvature example?
         -> compute all single example gradients, decompose them into the eigenbasis, and see if high-eigenvalue directions just hold more of the dot product
+        -> plot the distribution of absolute value of cosine angles between normalized gradients and eigenvalues, with
+           respect to each eigenvalue, and see how the distribution shifts
 
+- Step 5: Theory and Predictions of the Model which are validated experimentally
+    - given the evidence we've seen, we can derive an optimal learning rate schedule for our network, from
+      theoretical considerations from using sgd + momentum.
+    - Do we get better generalisation if we make our oscillations in scale with the bayesian posterior?
+      to do this, change the learning rates per dimension to scale with the eigenvalue, and observe generalisation.
+      then observe the generalisation as we vary learning rate
+    - do the analysis for nesterov momentu, and for an arbitrary update sequence in the past, then optimize
+      the sequence parameters to do well for the type of power law spectrum we have.
+    - prediction: at the very end, decrease the learning rate to almost nothing and do a full epoch
+      with batch_size = 1, the prediction is that high noise variance leads to better matching the bayesian
+      posterior sampling
+    - prediction: doing HMC at the end will also increase the accuracy of the model
 
 steps:
 - computing hessians with finite batch size
@@ -76,10 +94,5 @@ maybe 4 points of interest: non-optimized, then only a few iterations afterwards
 iters = 0, 2000, 20000, 48800
 at 14 hours per hessian, this is roughly 2 days of computing
 
-
-
-once that's done, focus on the final hessian
-
-the other big thing is to do line searches around the eigenvalue minima
 
 

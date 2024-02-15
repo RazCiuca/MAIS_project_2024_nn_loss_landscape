@@ -291,16 +291,38 @@ def load_hessian_from_folder(foldername):
     pass
 
 
-# computing all total dataset gradients
-if __name__ == "__main__2":
-    model_grad = grad_model(model, data_x, data_y, loss_fn)
-
-    t.save(model_grad, 'models/resnet9_cifar10/total_gradient_at_end.pth')
-    pass
-
-
 # total hessian compute
 if __name__ == "__main__":
+
+    # data_x, data_y = t.load('models/resnet9_cifar10/enlarged_dataset.pth')
+
+    data_train = torchvision.datasets.CIFAR10('../datasets/', train=True, download=True)
+    data_x = t.from_numpy(data_train.data).float()
+    data_y = t.LongTensor(data_train.targets)
+
+    x_mean = data_x.mean(dim=0)
+    x_std = data_x.std(dim=0)
+
+    data_x = (data_x - x_mean) / (1e-7 + x_std)
+    data_x = data_x.transpose(1, 3)
+
+    for iters in [10000, 30000, 40000]:
+
+        model = ResNet9(3, 10, expand_factor=1)
+        model.load_state_dict(t.load(f'models/resnet9_cifar10/model_{iters}.pth'))
+
+        model = model.cuda()
+        loss_fn = nn.CrossEntropyLoss()
+
+        dataset = (data_x, data_y)
+
+        hess_comp = HessianCompute(dataset, model, loss_fn)
+        hess_comp.compute_hessian(folder_to_save=f'./models/resnet9_cifar10/hess_{iters}')
+
+
+
+# compute model gradients
+if __name__ == "__main___":
 
     # data_x, data_y = t.load('models/resnet9_cifar10/enlarged_dataset.pth')
 
@@ -324,10 +346,5 @@ if __name__ == "__main__":
         data_x = data_x.transpose(1,3)
         data_y = data_y
 
-        dataset = (data_x, data_y)
-
-        hess_comp = HessianCompute(dataset, model, loss_fn)
-        hess_comp.compute_hessian(folder_to_save=f'./models/resnet9_cifar10/hess_{iters}')
-
-
-
+        gradient = grad_model(model, data_x, data_y, loss_fn)
+        t.save(gradient, f'./models/resnet9_cifar10/gradients/{iters}.pth')
