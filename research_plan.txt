@@ -44,6 +44,8 @@ Title: The Quadratic Approximation to NN Loss Landscapes: explorations and impli
     - how does the spectrum of eigenvalues evolve through training?
 
     - are the eigenvectors mostly constant? despite the spectrum changing?
+        No, the top eigenvalues resample their vectors according to a power law proportional to the
+
 
     - how far from minimum in each eigendirection does the network start?
 

@@ -306,7 +306,7 @@ if __name__ == "__main__":
     data_x = (data_x - x_mean) / (1e-7 + x_std)
     data_x = data_x.transpose(1, 3)
 
-    for iters in [10000, 30000, 40000]:
+    for iters in [100, 200, 500, 10100, 10200, 10500]:
 
         model = ResNet9(3, 10, expand_factor=1)
         model.load_state_dict(t.load(f'models/resnet9_cifar10/model_{iters}.pth'))
