@@ -163,7 +163,7 @@ if __name__ == "__main__":
         # backwards and take optim step
         optimizer.zero_grad()
         loss.backward()
-        nn.utils.clip_grad_value_(model.parameters(), grad_clipping)
+        # nn.utils.clip_grad_value_(model.parameters(), grad_clipping)
         optimizer.step()
 
         if iter % plot_intervals == 0:
@@ -181,5 +181,5 @@ if __name__ == "__main__":
     # plot training loss, test loss and save figure
     plt.plot(np.array(plot_iters[:-1]), np.array(plot_losses), color='b')
     plt.yscale('log')
-    plt.savefig('./figures/small_resnet_cifar10.png')
+    plt.savefig('./figures/small_resnet_cifar10_sgd_default_no_clip.png')
 

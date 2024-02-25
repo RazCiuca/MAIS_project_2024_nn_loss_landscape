@@ -104,7 +104,20 @@ def top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k = 100, mode='LA', 
 
     return eigvals, eigvecs
 
+def update_eigenvecs_estimate(eigvecs_estimate, indices, hv_updates):
+    """
 
+    :param eigvecs_estimate: [n_params, n_eig] vectors estimates of norm 1
+    :param indices: indices at which to update
+    :param hv_updates: the hessian vector product with respect to the eigvecs at indices
+    :return:
+    """
+
+    # remove the components from 0 to i-1 from i
+
+    # remove components along i from i+ 1 to n
+
+    pass
 
 
 def make_line_search_dir(eigvals, eigvecs):

@@ -1,0 +1,38 @@
+
+- we recover power law spectrums
+- plot how eigenvectors are rotating into each other
+- test the theory of quadratic batch noise + increasing sharpness valleys
+    -> how much of the loss at a given point is due to insufficiently being at the minimum of the quadratic loss
+        vs. not being down the narrow valley?
+
+    -> what examples change the most in their losses as we go down into the valley?
+    -> vs what examples change the most if we go down to the minimum of the quadratic?
+
+- what's the dimension of the subspace with increasing sharpness?
+- find the hessian of the largest eigenvalue?!?!?
+
+todo:
+- what's the power like for the eigenvectors associated with eigenvalues?
+    -> can we freeze the top 10% of weights associated with the top 10 eigenvectors
+       and have that be good enough to allow us to optimise much better?
+- plot the top eigenvalue through training
+- train a network computing top k eigenvectors and optimising in the remaining subspace
+    -> see if learning rate decreases have the same effect under that regime
+- see if optimising the high eigenvalues is enough to have the gradient point down-cliff
+- plot minimum variance as function of eigenvalue
+
+Main point of presentation:
+-> the loss landscape is dominated by two effects:
+    -> noise variance with batches keeping us at high levels of loss
+    -> valleys hidden by this high loss, only accessible by descending to the quadratic minimum
+        -> these valleys are usually transformed from the low-eigenvalue dimensions
+
+punchline: the high eigenvalues are gating access to seeing the correct low-eigenvalue directions
+    -> implications: maintain an estimate of the top few eigenvalues, and optimise with a high learning rate
+       in that subspace
+
+weekend: make poster really appealing and print it at a print shop
+    ->
+
+-> design 3d printed surface and print it at school?
+

@@ -1,4 +1,10 @@
+"""
+todo: at the minimum implied by the quadratics, compute the full gradient and do a line search in that direction.
+hypothesis: most of the
 
+question: how many eigenvalues do you need to optimise before the gradient starts pointing towards the right place?
+question: is the gradient dot final param direction even positive?
+"""
 
 import time
 import torch as t
@@ -13,13 +19,49 @@ from torch.func import jvp, grad, vjp
 from torch.autograd.functional import vhp
 from models import *
 import matplotlib.pyplot as plt
+import matplotlib
 
+def get_implied_min_location_params(vec_params, gradient, eigvals, eigvecs, eigen_threshold=1e-5):
+
+    mask = (eigvals > eigen_threshold)
+
+    vecs = eigvecs[:, mask]
+    vals = eigvals[mask]
+
+    theta_d = vecs.T @ gradient
+
+    min_locs = - theta_d / vals
+
+    min_params = vec_params + vecs @ min_locs
+
+    return min_params
+
+def get_loss(params, model, data_x, data_y, loss_fn):
+
+    with t.no_grad():
+        z = model.shape_vec_as_params(params)
+        preds = functional_call(model, z, data_x)
+        loss = loss_fn(preds, data_y)
+
+    return loss.item()
+
+def line_search_in_grad_direction(params, model, data_x, data_y, loss_fn):
+
+    params = params.clone().detach()
+    params.requires_grad = True
+
+    z = model.shape_vec_as_params(params)
+    preds = functional_call(model, z, data_x)
+    loss = loss_fn(preds, data_y)
+
+    loss.backward()
 
 
 # compute model gradients
 if __name__ == "__main__":
 
     # data_x, data_y = t.load('models/resnet9_cifar10/enlarged_dataset.pth')
+    cmap = matplotlib.colormaps['Spectral']
 
     data_train = torchvision.datasets.CIFAR10('../datasets/', train=True, download=True)
     data_x = t.from_numpy(data_train.data).float()
@@ -31,27 +73,73 @@ if __name__ == "__main__":
     data_x = (data_x - x_mean) / (1e-7 + x_std)
     data_x = data_x.transpose(1, 3)
 
-    for iters in [48800, 20000, 2000, 0]:
+    data_x = data_x.cuda()
+    data_y = data_y.cuda()
 
-        model = ResNet9(3, 10, expand_factor=1)
-        model.load_state_dict(t.load(f'models/resnet9_cifar10/model_{iters}.pth'))
+    model = ResNet9(3, 10, expand_factor=1)
+    loss_fn = nn.CrossEntropyLoss()
 
-        # model = model.cuda()
+    losses = []
+    iters = np.arange(0, 48900, 100)
+
+    # computing full-dataset losses
+    for iter in iters:
+
+        model.load_state_dict(t.load(f'models/resnet9_cifar10/model_{iter}.pth'))
+        model = model.cuda()
         loss_fn = nn.CrossEntropyLoss()
-        preds = model(data_x)
-        loss = loss_fn(preds, data_y).item()
 
-        eigvals, eigvecs = t.load(f'./models/resnet9_cifar10/eig_{iters}/eigvals_vecs.pth')
-        gradient = t.load(f'./models/resnet9_cifar10/gradients/{iters}.pth')
+        with t.no_grad():
+            preds = model(data_x)
+            loss = loss_fn(preds, data_y).detach().item()
 
-        model_params = model.get_vectorized_params()
-        theta = eigvecs.T @ model_params
-        theta_d = eigvecs.T @ gradient
+            print(f"for iter {iter}, loss is {loss: .7f}")
+            losses.append(loss)
 
-        min_locs = - theta_d / eigvals
+    # now computing min_locs at given points:
+    eigstuff_iters = np.array([0, 500, 2000, 10000, 20000, 30000, 40000, 48800])
+    min_losses = []
 
-        mask = (eigvals > 1e-6)
+    for iter in eigstuff_iters:
+        model.load_state_dict(t.load(f'models/resnet9_cifar10/model_{iter}.pth'))
+        eigvals, eigvecs = t.load(f'./models/resnet9_cifar10/eig_{iter}/eigvals_vecs.pth')
+        gradient = t.load(f'./models/resnet9_cifar10/gradients/{iter}.pth')
 
-        total_loss_delta = t.sum(0.5 * theta_d[mask]**2 / eigvals[mask])
+        model = model.cuda()
+        vec_params = model.get_vectorized_params().cuda()
+        eigvals = eigvals.cuda()
+        eigvecs = eigvecs.cuda()
+        gradient = gradient.cuda()
 
-        print(f"for iter {iters}, min is {loss: .7f}, the implied minimum is {loss - total_loss_delta.item(): .7f}")
+        # find the top n eigenvalues
+
+        n_eigvals = eigvals.shape[0]
+
+        # thresholds = np.exp(np.arange(0, np.log(n_eigvals*0.9), np.log(n_eigvals*0.9)/20))
+        thresholds = [-11]
+
+        min_list = []
+
+        for i,threshold in enumerate(thresholds):
+
+            eigen_threshold = np.abs(np.sort(eigvals.cpu().numpy())[-int(np.ceil(threshold))])
+
+            min_params = get_implied_min_location_params(vec_params, gradient, eigvals, eigvecs, eigen_threshold=eigen_threshold)
+
+            implied_min_loss = get_loss(min_params, model, data_x, data_y, loss_fn)
+
+            plt.scatter(iter, implied_min_loss, color = cmap(i/len(thresholds)))
+
+            min_list.append(implied_min_loss)
+
+        print(f"for iter {iter}, loss is {min_list}")
+
+    # cm = plt.colorbar(ticks=np.log(thresholds), label='eigenvalue threshold')
+    # plt.clim(-0.5, 5.5)
+    plt.plot(iters, np.array(losses), label='training losses')
+    # plt.scatter(eigstuff_iters, np.array(min_losses), color='red', label="implied minimums")
+    # plt.ylim(top=1.0)
+    plt.legend()
+    plt.yscale('log')
+    plt.show()
+
