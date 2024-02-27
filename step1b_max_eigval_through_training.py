@@ -1,4 +1,8 @@
+"""
+Load up all the model checkpoints and evaluate the loss on the whole dataset, and find the biggest eigenvalue, plotting
+this
 
+"""
 
 import time
 import torch as t

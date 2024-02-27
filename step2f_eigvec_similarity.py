@@ -37,14 +37,15 @@ import matplotlib
 
 # plotting eigvec similarity
 # for the k highest eigenvalues at the next time step, plot how they relate to the eigenvalues of the past time step
-if __name__ == "__main__":
+if __name__ == "__main___":
 
     cmap = matplotlib.colormaps['Spectral']
 
     all_eigvals = []
     all_eigvecs = []
 
-    all_iters = [0, 2000, 10000, 20000, 30000, 40000, 48800]
+    # all_iters = [0, 2000, 10000, 20000, 30000, 40000, 48800]
+    all_iters = [10000, 10100, 10500]
 
     for iters in all_iters:
 
@@ -128,14 +129,14 @@ def get_slice_power(x, y, n_slices=20):
 
     return np.exp(slice_midpoints), np.array(powers)
 
-if __name__ == "__main___":
+if __name__ == "__main__":
 
     cmap = matplotlib.colormaps['Spectral']
 
     all_eigvals = []
     all_eigvecs = []
 
-    all_iters = [0, 2000, 10000, 20000, 30000, 40000, 48800]
+    all_iters = [10000, 10100, 10500]
 
     for iters in all_iters:
 

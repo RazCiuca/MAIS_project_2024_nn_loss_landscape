@@ -24,7 +24,7 @@ if __name__ == "__main__":
     all_eigvals = []
     all_eigvecs = []
 
-    top_k_eigvals = 1000
+    top_k_eigvals = 2000
 
     all_iters = [0, 2000, 10000, 20000, 30000, 40000, 48800]
 
@@ -66,18 +66,18 @@ if __name__ == "__main__":
         # plt.yscale('log')
         plt.ylim(1e-2, 1.0)
         plt.tight_layout()
-        # plt.show()
-        plt.savefig(
-            f'./figures/eigvec_power_plots/{iter}.png',
-            dpi=300)
-        plt.close()
+        plt.show()
+        # plt.savefig(
+        #     f'./figures/eigvec_power_plots/{iter}.png',
+        #     dpi=300)
+        # plt.close()
 
         plt.title(f'eigenvalue weighted cumul power for iter {iter}')
         plt.plot(np.cumsum(np.sort(eig_weighted_power)[::-1])/eig_sum)
         plt.xscale('log')
         plt.tight_layout()
-        # plt.show()
-        plt.savefig(
-            f'./figures/eigvec_power_plots/eig_weighted_{iter}.png',
-            dpi=300)
-        plt.close()
+        plt.show()
+        # plt.savefig(
+        #     f'./figures/eigvec_power_plots/eig_weighted_{iter}.png',
+        #     dpi=300)
+        # plt.close()

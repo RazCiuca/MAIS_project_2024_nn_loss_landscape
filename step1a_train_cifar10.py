@@ -1,4 +1,7 @@
+"""
+This file trains a small Resnet on cifar10 and saves all intermediate models in the models folder
 
+"""
 import time
 import functools
 import torch.nn as nn

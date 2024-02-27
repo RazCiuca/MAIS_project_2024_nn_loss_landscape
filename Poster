@@ -1,0 +1,35 @@
+
+Title:
+Neural Network Training Dynamics: Towards Making Sense of a Confusing Mess
+
+mystery one: why do sharp loss drops happen at lr decreases?
+mystery two: why is it necessary to train for a while with high lr?
+
+figure 1: math for quadratic oscillations at given learning rate
+
+figure 2: model architecture and dataset
+
+Plot 0: optimization curves for a purely quadratic function, with noise.
+
+Plot 1: Network loss over time, with largest Eigenvalue, and lr decreases noted
+        -> highest eigenvalue increases through time
+        -> step3_max_eigval_through_training.py
+Plot 2: Network Spectrum Throughout Training, color coded, with Negative eigenvalue too
+        -> shape of the spectrum is mostly power-law, with a few really high eigenvalues
+Plot 3: Total Negative eigenpower vs Total Positive Eigenpower throughout training
+        -> negative eigenvalues never disappear
+Plot 4: line searches in eigendirections, with batch-uncertainty and minima noted
+        -> line search directions are basically quadratic,
+Plot 5: minima variance vs eigenvalue
+Plot 6: eigenvector ranked power plot vs eigenvalue throughout training
+        -> high eigenvalues are concentrated in few weights
+Plot 7: eigenvector similarity through training
+        -> high eigenvectors are more consistent
+Plot 8: Local hessian-minimized loss throughout training
+        -> only part of the drop can be explained by purely quadratic phenomena
+Plot 9: Cliff-drop direction vs previous eigenvals:
+        -> most of the cliff drop direction goes in what used to be low-eigenvalue directions
+        -> hence: high eigenvalues gate access to the correct low-eigenvalue directions
+Plot 10: contour plot of the cliff neighborhood, for both cliffs
+
+

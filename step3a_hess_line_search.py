@@ -120,7 +120,7 @@ if __name__ == "__main__":
     data_x = data_x.transpose(1, 3)
 
     # for iters in [48800, 20000, 2000, 0]:
-    for iters in [0]:
+    for iters in [2000]:
 
         model = ResNet9(3, 10, expand_factor=1)
         model.load_state_dict(t.load(f'models/resnet9_cifar10/model_{iters}.pth'))

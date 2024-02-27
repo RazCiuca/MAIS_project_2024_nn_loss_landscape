@@ -115,8 +115,8 @@ if __name__ == "__main__":
 
         n_eigvals = eigvals.shape[0]
 
-        # thresholds = np.exp(np.arange(0, np.log(n_eigvals*0.9), np.log(n_eigvals*0.9)/20))
-        thresholds = [-11]
+        thresholds = np.exp(np.arange(0, np.log(n_eigvals*0.9), np.log(n_eigvals*0.9)/20))
+        # thresholds = [-11]
 
         min_list = []
 
