@@ -2,6 +2,7 @@
 # NN Training Dynamics: Making Sense of a Confusing Mess
 
 ## Table of Contents
+0. [TL;DR](#0-tldr)
 1. [Introduction: 4 mysteries of training NNs](#1-intro)
 2. [A simple Quadratic Stochastic Model](#2-quad-model)
 3. [The Hessian Spectrum Throughout Training](#3-hessian-training)
@@ -12,7 +13,15 @@
 8. [Testing the Narrowing Valley Hypothesis](#8-testing-valley)
 9. [Conclusion and Further Questions](#9-conclusion)
 
-[//]: # (todo: add table of contents)
+## 0. TL;DR <a name="0-tldr"></a>
+
+It turns out that thinking of the loss landscape of neural networks as a long valley with increasingly tightening walls (see bottom picture) which is stochastically translated in random directions at every minibatch can elegantly explain the following 4 puzzling phenomena observed in network training: 
+1. Sharp Loss Decrease at every Learning Rate decrease
+2. Equivalence Between High Batch Size and Low Learning Rate
+3. Highest eigenvalue of the Hessian rises when Learning Rate drops
+4. Negative Eigenvalues of the Hessian Persist throughout training
+
+![curving_valley_1.png](images%2Fcurving_valley_1.png)
 
 ## 1. Introduction: 4 mysteries of training NNs <a name="1-intro"></a>
 
