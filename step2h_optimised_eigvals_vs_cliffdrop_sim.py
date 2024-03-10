@@ -2,8 +2,6 @@
 The point of this file is to plot the number of optimised eigdirections vs the cosine distance
 of the gradient at that optimised theta with the cliffdrop direction
 
-todo: compute the expected effect of the cosine distance increase under pure random quadratic function and plot that.
-
 """
 
 

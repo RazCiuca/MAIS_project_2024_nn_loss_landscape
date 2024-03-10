@@ -1,9 +1,7 @@
 """
-todo: at the minimum implied by the quadratics, compute the full gradient and do a line search in that direction.
-hypothesis: most of the
+investigates how the loss decreases as we do partial newton steps, considering bigger and bigger subsets of the
+eigenvectors
 
-question: how many eigenvalues do you need to optimise before the gradient starts pointing towards the right place?
-question: is the gradient dot final param direction even positive?
 """
 
 import time

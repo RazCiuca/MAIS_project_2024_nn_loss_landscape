@@ -1,5 +1,5 @@
 """
-
+plots how eigenvectors are changing through time,
 """
 
 import time

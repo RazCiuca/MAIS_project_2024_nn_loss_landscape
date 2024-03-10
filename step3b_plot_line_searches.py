@@ -1,4 +1,6 @@
-
+"""
+plots the results computed in step3a_hess_line_search.py
+"""
 import time
 import torch as t
 import numpy as np

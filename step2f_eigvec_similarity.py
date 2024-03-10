@@ -1,21 +1,6 @@
 
 """
-Build a model for the diffusion rates into other dimensions of given eigenvalues
-
-observation: the pattern of diffusion through dimensions is roughly the same
-no matter what pairs of optimisation points I choose
-
-observation:
-eigenvectors of high eigenvalue basically resample their eigenvectors by focusing on the high
-eigenvalues, as you decrease your eigevalue, the sampling starts to become proportional to eigenvalue**p,
-where p approaches 0 for small eigenvalues
-
-so far we don't yet know if the high eigenvalues remain in the high eigenspace, all we know is that
-high eigenvalues get resampled with a power law with a higher exponent than low eigenvalues
-
-answer: the high eigenvalues do come with high power from the previous high eigenvalues.
-how does the diffusion work? if I compute the eigenspectrum only 100 iterations after, how will that change?
-
+Plotting the eigenvector similarities between different network checkpoints
 """
 
 

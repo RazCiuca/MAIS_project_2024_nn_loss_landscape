@@ -9,8 +9,6 @@ downwards, removing all components from higher matrices
 there is a free parameter that determines the average number of lanczos updates per gradient
 descent step.
 
-todo: try a different approach: take n steps in the high eigenvalue space for every one step in the full space
-
 
 """
 import torch as t

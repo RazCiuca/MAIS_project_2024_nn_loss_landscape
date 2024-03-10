@@ -1,4 +1,6 @@
-
+"""
+Defines the small resnet9 model used for training
+"""
 import torch as t
 import torch.nn as nn
 import numpy as np

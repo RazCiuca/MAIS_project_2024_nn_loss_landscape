@@ -1,12 +1,9 @@
 """
-This file defines routines for computing the entire hessian of a model row-by-row, sending things
-back to cpu, and storing the result on disk
+Razvan Ciuca, 2024
 
-steps for gaussian computation:
-
-for each row, compute the Hessian-vector product on gpu, then send to cpu. If the dataset is too big, split it
-up into chunks and sum the Hv product over the chunks. Periodically store the pieces to disk, in case it crashes,
-and start back the process by reading them from dist. Then load up the pieces and concatenate them.
+Contains useful functions for computing Hessians of models implicitely, as well
+as optimising in models in defined subspaces and computing the top/bottom eigenvalues and vectors
+of models
 
 """
 
@@ -83,7 +80,7 @@ def grad_model(model, data_x, data_y, loss_fn):
 
     return t.cat([x.flatten() for x in gradients]).detach().cpu()
 
-def top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k = 100, mode='LA', batch_size=None):
+def top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k = 100, mode='LA', batch_size=None, v0=None):
     """
     computes top-k eigenvalues and eigenvectors of the hessian of model, with given data,
     possibly with finite batch size
@@ -98,7 +95,7 @@ def top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k = 100, mode='LA', 
     linop = LinearOperator((model.n_params, model.n_params),
                             matvec = lambda x: hvp_model_np(x, model, data_x, data_y, loss_fn))
 
-    eigvals, eigvecs = eigsh(linop, k=top_k, which=mode)
+    eigvals, eigvecs = eigsh(linop, k=top_k, which=mode, v0=v0)
 
     n_samples = data_x.size(0)
 
@@ -175,7 +172,7 @@ def line_search(model, loss_fn, inputs, targets, eigvals, eigvecs):
 
     return model.shape_vec_as_params(optimal_x)
 
-def sgd_in_subspace(model, loss_fn, inputs, targets, eigvals, eigvecs, n_iter=1000):
+def sgd_in_subspace(model, loss_fn, inputs, targets, eigvals, eigvecs, device, n_iter=1000):
     """
     does SGD in the space defined by eigvecs, as a difference of parameters from the current model
     """
@@ -183,15 +180,16 @@ def sgd_in_subspace(model, loss_fn, inputs, targets, eigvals, eigvecs, n_iter=10
     # mask = eigvals < 0
     # mask_val = -eigvals[mask]
     # mask_vec = (eigvecs.T)[mask]
-    mask_val = eigvals
-    mask_vec = eigvecs.T
+    mask_val = t.from_numpy(eigvals).to(device)
+    mask_vec = t.from_numpy(eigvecs).T.to(device)
 
-    optim_x = t.zeros(mask_val.size(0)).cuda()
+    optim_x = t.zeros(mask_val.size(0)).to(device)
     optim_x.requires_grad = True
 
     flat_params = model.get_vectorized_params().detach()
 
-    optimizer = optim.Adam([optim_x], lr=5e-4, betas=(0.9, 0.99))
+    optimizer = optim.Adam([optim_x], lr=1e-3, betas=(0.9, 0.99))
+    # optimizer = optim.SGD([optim_x], lr=1e-2, momentum=0.9)
     # optimizer = t.optim.LBFGS([optim_x], lr=1.0, history_size=1000, line_search_fn='strong_wolfe')
     last_loss = 0
 
@@ -212,7 +210,7 @@ def sgd_in_subspace(model, loss_fn, inputs, targets, eigvals, eigvecs, n_iter=10
         loss.backward()
         optimizer.step()
 
-    return model.shape_vec_as_params(flat_params + optim_x @ mask_vec)
+    return model.shape_vec_as_params_no_names(flat_params + optim_x @ mask_vec)
 
 
 class HessianCompute:
@@ -299,13 +297,42 @@ class HessianCompute:
 
         t.save(t.stack(total_hess, dim=1), folder_to_save + f'/hess_{chunk_counter}')
 
-def load_hessian_from_folder(foldername):
+def find_direction_of_greatest_eigval_increase():
 
     pass
 
 
-# total hessian compute
+
+def load_hessian_from_folder(foldername):
+
+    pass
+
+# bottom eigen compute
 if __name__ == "__main__":
+
+    data_train = torchvision.datasets.CIFAR10('../datasets/', train=True, download=True)
+    data_x = t.from_numpy(data_train.data).float()
+    data_y = t.LongTensor(data_train.targets)
+
+    x_mean = data_x.mean(dim=0)
+    x_std = data_x.std(dim=0)
+
+    data_x = (data_x - x_mean) / (1e-7 + x_std)
+    data_x = data_x.transpose(1, 3)
+
+    model = ResNet9(3, 10, expand_factor=1)
+    model.load_state_dict(t.load(f'models/resnet9_cifar10/model_{10000}.pth'))
+
+    model = model.cuda()
+    loss_fn = nn.CrossEntropyLoss()
+
+    eigvals, eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k = 10, mode='SA', batch_size=10000)
+
+    print(eigvals)
+
+
+# total hessian compute
+if __name__ == "__main___":
 
     # data_x, data_y = t.load('models/resnet9_cifar10/enlarged_dataset.pth')
 

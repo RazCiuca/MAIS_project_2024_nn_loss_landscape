@@ -1,0 +1,21 @@
+
+==========================================
+Algorithm #1
+==========================================
+
+- Initial phase:
+    -> use very small batch sizes and very large learning rates
+       to quickly optimise the positive eigenvalue directions
+- Then, compute the total average of past components
+    -> in order to quickly descend to a good level
+    -> but keep track of the components of past networks
+- at the lower level, compute the batch gradient for both the averaged network, and the past networks
+    -> all the past network directions are bad, subtract out the components of the
+       good-network gradient from the gradients of bad networks
+
+Idea #2:
+-> keep history of the gradient and upweight those from networks who happened to be close to the
+   polyak averaged network!!! incredible way of effectively increasing the batch size!
+   -> not weighted by distance precisely, but more like by the projection of the distance between network and
+      averaged network on the gradient of the old network
+

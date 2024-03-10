@@ -1,4 +1,6 @@
-
+"""
+investigates how similar the "cliffdrop direction" is with respect to all our eigenvalues
+"""
 import itertools
 import time
 import torch as t

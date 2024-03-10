@@ -1,4 +1,7 @@
+"""
+misc file for augmenting cifar10 using routines from timm
 
+"""
 import time
 import functools
 import torch.nn as nn
