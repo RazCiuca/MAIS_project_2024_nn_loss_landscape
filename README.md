@@ -1,9 +1,20 @@
 
 # NN Training Dynamics: Making Sense of a Confusing Mess
 
+## Table of Contents
+1. [Introduction: 4 mysteries of training NNs](#1-intro)
+2. [A simple Quadratic Stochastic Model](#2-quad-model)
+3. [The Hessian Spectrum Throughout Training](#3-hessian-training)
+4. [Testing the Quadratic Approximation](#4-testing-quad)
+5. [Is there Structure in the Eigenvectors components?](#5-eigvec-structure)
+6. [Are the Eigenvectors Mostly Constant?](#6-eigvec-constant)
+7. [A plausible hypothesis: Narrowing Valleys](#7-valley-hypothesis)
+8. [Testing the Narrowing Valley Hypothesis](#8-testing-valley)
+9. [Conclusion and Further Questions](#9-conclusion)
+
 [//]: # (todo: add table of contents)
 
-## 1. Introduction: 4 mysteries of training NNs
+## 1. Introduction: 4 mysteries of training NNs <a name="1-intro"></a>
 
 This is a blog post about investigating a bunch of weird behaviours that happen when training modern neural networks. Often, newcomers to deep learning look at the size of current models, observe that the optimization problem is non-convex in dimension 10^8, and throw up their hands in despair, abandoning any attempt at building intuitions about the loss landscape of realistic networks. As we'll see, that despair might be a bit premature, as we can build very simple 1D or 2D loss landscapes that capture a lot of the properties we observe in modern deep learning, while still being very easy to visualize. 
 
@@ -24,7 +35,7 @@ Somewhat surprisingly, it turns out that these 4 separate phenomena can be unifi
 
 **Mystery #4**: Ordinarily the negative eigenvalues are the easiest to optimise since they are the most unstable: a step step down the slope *increases* your gradient magnitude towards the minimum. Yet as we'll see, a sizeable fraction of the eigenvalue spectrum at every point in training consists of negative values. What's keeping them from being optimised away?
 
-## 2. A simple Quadratic Stochastic Model
+## 2. A simple Quadratic Stochastic Model <a name="2-quad-model"></a>
 
 The simplest model that exhibits the strange cliff-drop-at-lr-decrease feature is optimising a quadratic function $f(x) = \lambda (x-\epsilon)^2$, where $\epsilon \sim N(0, \sigma^2)$ is a random variable added every time the function is sampled. When doing gradient descent with a learning rate $\alpha$ on such a stochastic function, the update equations become:
 
@@ -96,7 +107,7 @@ Hence the real impact of momentum is to allow the very small eigenvalues to have
 
 The fundamental lesson of this simple model is likely that **the noise in our optimisation function** is a crucial factor to keep in mind when thinking about loss landscapes. Mysteries #1 and #2 above are fundamentally noisy phenomena. This toy model is also evidence against the landscape being somehow fractal in nature given that we don't need to invoke such a complicated structure to explain the sharp loss decreases.
 
-## 3. The Hessian Spectrum Throughout Training
+## 3. The Hessian Spectrum Throughout Training <a name="3-hessian-training"></a>
 
 ### Model Setup: Small Resnet on Cifar10
 
@@ -138,7 +149,7 @@ A few observations:
 - We still have negative eigenvalues even at the very end of training, though the shape of the spectrum does seem to change, and the total number of non-negligeable negative values steadily drops (the dropoff in the value with rank shifts leftward as training progresses)
 - The pure quadratic assumption is already violated by the changing spectrum (and by the existence of negative eigenvalues).
 
-## 4. Testing the Quadratic Approximation
+## 4. Testing the Quadratic Approximation <a name="4-testing-quad"></a>
 
 
 In the derivation of the stochastic quadratic model, we made a really big assumption about the form of the stochasticity, namely that the function's shape stays the same, and only its minimum is shifted randomly from sample to sample. One could imagine other forms of stochasticity, for instance, the sharpness of the minimum might also change in addition to its minimum location. Or the minimum location might vary in a non-gaussian way. Here we test this assumption for our network at iteration = 10000, i.e. right before the first decrease in lr (though these results replicate at every other point in training).
@@ -213,7 +224,7 @@ Now that we have the variance $s^2$ (the variance of the equilibrium distributio
 As we can see, something goes terribly wrong: the toy model is predicting a total loss decrease an order of magnitude higher than the total loss of the network. Cross-Entropy is bounded below by 0, hence it's impossible to get a loss decrease larger than the red line. I don't know what's going on here, perhaps the addition of gradient clipping and weight decay is messing up the simple sgd-with-momentum math, or the noise is non-gaussian in a way that makes our assumptions break down. (The noise merely being correlated between dimensions wouldn't be enough to explain this.)
 
 
-## 5. Is there Structure in the Eigenvectors components?
+## 5. Is there Structure in the Eigenvectors components? <a name="5-eigvec-structure"></a>
 Switching gears a bit for the moment, let's look at the eigenvectors corresponding to each of our eigenvalues and try to figure out if there's any internal structure to them that we can find. An eigenvector $v_\lambda$ will by construction have unit norm, i.e. $\sum_i v_{\lambda, i}^2 = 1$, but let's figure out how sharply concentrated those $v_{\lambda, i}^2$ values are. Do we have a few components that dominate the norm, or is it pretty much indistinguishable from a gaussian normal vector? 
 
 To do this, for each vector $v_{\lambda}$, sort the values $v_{\lambda, i}^2$ into $v_{\text{sorted},\lambda, i}^2$, and compute the cumulative sum $\sum^n_i  v_{\text{sorted},\lambda, i}^2$. This is what we plot below, with red curves corresponding to high $\lambda$ vectors, and bluer curves to low $\lambda$. The lone black curve is what we would expect to see from a gaussian distribution of components
@@ -233,7 +244,7 @@ A few points:
 - A plausible hypothesis for what's happening here is that total loss is very sensitive to a minority of the parameters, probably corresponding to the biases of the network and the learned batchnorm variances, and this is showing up in the eigenvectors. 
 
 
-## 6. Are the Eigenvectors Mostly Constant?
+## 6. Are the Eigenvectors Mostly Constant? <a name="6-eigvec-constant"></a>
 
 Now we turn to the question of figuring out how the eigenvectors of the Hessian change over the course of optimization. Visualizing changes in a 26000 by 26000 matrix is non-trivial, so we need a bit of inventiveness to extract some interesting results here.
 
@@ -263,7 +274,7 @@ comments:
 - The vectors seem to change the most in the early iterations, we see that in the graph from iteration 20000 to 30000, many more of the eigenvectors have sharp power curves, corresponding to the fact that they're mostly staying similar to their old eigenvectors.
 
 
-## 7. A plausible hypothesis: Narrowing Valleys
+## 7. A plausible hypothesis: Narrowing Valleys <a name="7-valley-hypothesis"></a>
 While the stochastic quadratic approximation predicts that loss should drop when we drop the learning rate, it *does not* predict that the maximum eigenvalue should rise, nor does it predict that negative eigenvalues remain until the end of training. Can we build an example of a non-quadratic 2D function which exhibits these two properties, or do we need high dimensions to explain these phenomena? The answer turns out to be that **yes**, we can construct such a function. Consider $f(x,y) = \log \bigg( 0.2(x-0.8)^2 + y^2 * \exp(5x+1) + 1 \bigg)$, which we now plot:
 
 ![curving_valley_1.png](images%2Fcurving_valley_1.png)
@@ -296,7 +307,7 @@ This simplified model also provides a possible explanation for the "Edge Of Stab
 
 This story seems to concisely explain the "4 mysteries" of training neural networks that we considered at the beginning of this post. Sharp loss decreases, high-batch-low-lr equivalence, the edge of stability, and persistent negative eigenvalues are all effects that naturally fall out of a stochastic landscape where some directions have narrowing valleys.
 
-## 8. Testing the Narrowing Valley Hypothesis
+## 8. Testing the Narrowing Valley Hypothesis <a name="8-testing-valley"></a>
 
 ### High Eigenvalues Gate Access to the Correct Low Eigenvalue directions
 The narrowing valley hypothesis makes one unambiguous prediction that we should be able to test in realistic networks: **if we optimise the loss function in the subspace defined by the highest eigenvalues of the hessian, the number of negative eigenvalues of the hessian at that local minimum should decrease**. In the context of the toy function from the previous section, that corresponds to finding the thin blue strip in the previous figure. i.e. optimising the y-dimension should bring us within a region of parameter space where there are no more negative eigenvalues.
@@ -307,7 +318,7 @@ To test this prediction in our small but non trivial model. We pick again the it
 
 [//]: # (graph with total negative eigenpower vs optimised high eigenvalue dimensions)
 
-## 9. Conclusion and Further Questions
+## 9. Conclusion and Further Questions <a name="9-conclusion"></a>
 
 Future directions:
 - Do these results generalise to larger Resnets, what about transformer architectures?
