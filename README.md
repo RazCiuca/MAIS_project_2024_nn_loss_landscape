@@ -75,7 +75,7 @@ Extending this effect to n dimensions is straightforward, a generic positive def
 
 ### Non-Equilibirum Behavior
 
-Having found the behavior of SGD on our simple stochastic quadratic loss in the limit of equilibrium, we now ask what happens out of equilibrium. In this toy model, we will assume that noise is essentially irrelevant until $x$ reaches values close to $0$. More specifically we should expect noise to become relevant when $x \sim s$, i.e. when it becomes similar in size to the standard deviation of the visitation fraction. We can compute the relaxation time $\tau$ that it takes SGD to get to equilibrium:
+Having found the behavior of SGD on our simple stochastic quadratic loss in the limit of equilibrium, we now ask what happens out of equilibrium. In this toy model, we will assume that noise is essentially irrelevant until $x$ reaches values close to $0$. More specifically we should expect noise to become relevant when $x \sim s$, i.e. when it becomes similar in size to the standard deviation of the empirical equilibirum distribution. We can compute the relaxation time $\tau$ that it takes SGD to get to equilibrium:
 
 
 $$ x_{n+1} = x_n - 2\alpha\lambda x_n = x_n (1-2\alpha\lambda) \implies x_n = x_0 \bigg(1-2\alpha\lambda\bigg)^n $$
@@ -102,7 +102,7 @@ The fundamental lesson of this simple model is likely that **the noise in our op
 
 Now that we've derived a plausible model for what's happening in the loss landscape, let's investigate the landscape of a real neural network by explicitely computing the full Hessian at multiple points in training. Here's the setup for the experiment:
 
-- CIFAR10 dataset
+- CIFAR10 dataset without data augmentation
 - Very Tiny Resnet model with GELU activations (for twice differentiability), only 26000 parameters in total
 - SGD with momentum. lr=1e-1, momentum=0.97, weight-decay=1e-3
 - 500 epoch total training
@@ -122,7 +122,7 @@ Notice the sharp drops at iterations 10000 and 20000, corresponding to dividing 
 
 ![loss_vs_max_eigval_over_training.png](images%2Floss_vs_max_eigval_over_training.png)
 
-The loss cliff drops become much cleaner, and we can see an extra drop appear at iteration 30000 and a very small one at 40000. There's also clear evidence of the "edge of stability" phenomenon: the top eigenvalue keeps increasing throughout training.
+The loss cliff drops become much cleaner, and we can see an extra drop appear at iteration 30000 and a very small one at 40000. There's also clear evidence of the "edge of stability" phenomenon: the top eigenvalue keeps increasing throughout training, and it shoots up quickly after each learning rate decrease.
 
 ### Hessian Eigenvalue Spectrum Evolution
 
@@ -307,15 +307,7 @@ To test this prediction in our small but non trivial model. We pick again the it
 
 [//]: # (graph with total negative eigenpower vs optimised high eigenvalue dimensions)
 
-## 9. Finding the narrow valley: the full-batch small-lr path
-
-[//]: # (distance along the optimal gd path vs largest eigenvalue)
-
-## 10. Are the near-zero eigenvalues doing anything? 
-
-[//]: # (fix the very small eigenvalue after a few iterations, and only optimise the top few directions and the negative directions)
-
-## 11. Conclusion and Further Questions
+## 9. Conclusion and Further Questions
 
 Future directions:
 - Do these results generalise to larger Resnets, what about transformer architectures?
