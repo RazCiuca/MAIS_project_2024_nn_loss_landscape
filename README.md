@@ -82,7 +82,7 @@ If we directly plot the loss of such a model, periodically dropping the learning
 
 Notice the log scale on the y axis, and the fact that each new minimum level is exactly an order of magnitude below the previous one, exactly as predicted by the theory.
 
-As an aside, we can derive (with just slightly more effort) an analogous equation for the case of SGD-with-momentum, where $\gamma$ is the momentum term. For this we obtain the following expected loss at equilibrium:
+As an aside, we can derive (with just slightly more effort, see the [appendix](#sgd-mom-derivation)) an analogous equation for the case of SGD-with-momentum, where $\gamma$ is the momentum term. For this we obtain the following expected loss at equilibrium:
 
 $$ E\[\lambda x^2\] = \frac{\alpha\lambda^2\sigma^2}{1-\gamma^2 - \alpha\lambda} $$
 
@@ -344,4 +344,26 @@ Future directions:
 - Can we determine an optimal learning rate schedule from our knowledge of the eigenvalue spectrum and the noise level in each dimension? 
 - Can we design architectures whose loss functions exhibit less of a narrowing effect, thereby being trainable with higher learning rates? 
 - How do we efficiently minimise noise in the larger eigenvalues while still making large steps in the low-eigenvalue directions?
+
+## Appendix: Derivation of Equilibrium Distribution for SGD with Momentum <a name="sgd-mom-derivation"></a>
+
+When adding momentum, the equations become:
+$$ a_{n+1} = \gamma a_n + (2\lambda (x_n + \epsilon))$$
+ $$   x_{n+1} = x_n - \alpha a_{n+1}$$
+ $$   a_{n+1} = \sum_{i=0}^n \gamma^{n-i} \bigg(2\lambda (x_i + \epsilon_i) \bigg)$$
+$$    x_{n+1} = x_n - \alpha \sum_{i=0}^n \gamma^{n-i} \bigg(2\lambda (x_i + \epsilon_i) \bigg)$$
+$$    x_{n+1} = x_n \bigg(1- 2\alpha\lambda\bigg) - \alpha\bigg(2\lambda\epsilon_n + \sum_{i=0}^{n-1} \gamma^{n-i} \bigg(2\lambda (x_i + \epsilon_i) \bigg) \bigg)$$
+
+If we assume that subsequent $x_i$ are roughly independant at equilibrium, we get for the variance $s^2$ of the equilibrium distribution of SGD with momentum:
+
+$$    s^2 = s^2 \bigg(1- 2\alpha\lambda\bigg)^2 + \bigg(2\alpha\lambda \sigma\bigg)^2 + \alpha^2 \lambda^2 (s^2 + \sigma^2)\bigg(\sum_{i=0}^{n-1} (2\gamma^{n-i})^2\bigg)$$
+ $$   \bigg(\sum_{i=0}^{n-1} (2\gamma^{n-i})^2\bigg) \rightarrow \frac{4\gamma^2}{1-\gamma^2}$$
+ $$   s^2 = s^2 \bigg(1- 2\alpha\lambda\bigg)^2 + \bigg(2\alpha\lambda \sigma\bigg)^2 + \alpha^2 \lambda^2 (s^2 + \sigma^2)\bigg(\frac{4\gamma^2}{1-\gamma^2}\bigg)$$
+ $$   s^2\bigg(1 - \bigg(1- 2\alpha\lambda\bigg)^2 - \frac{4\alpha^2\lambda^2\gamma^2}{1-\gamma^2} \bigg) = \bigg(2\alpha\lambda \sigma\bigg)^2 + \frac{4\alpha^2\sigma^2\lambda^2\gamma^2}{1-\gamma^2}$$
+$$    s^2\bigg(1 - \alpha\lambda- \frac{\alpha\lambda\gamma^2}{1-\gamma^2} \bigg) = \alpha\lambda\sigma^2 + \frac{\alpha\sigma^2\lambda\gamma^2}{1-\gamma^2}$$
+$$    s^2\bigg(1 - \frac{\alpha\lambda}{1-\gamma^2} \bigg) = \frac{\alpha\sigma^2\lambda}{1-\gamma^2}$$
+$$    s^2 = \frac{\alpha \sigma^2 \lambda}{1-\gamma^2 - \alpha\lambda} $$
+
+
+
 
