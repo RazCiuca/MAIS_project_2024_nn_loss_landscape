@@ -15,11 +15,13 @@
 
 ## 0. TL;DR <a name="0-tldr"></a>
 
-It turns out that thinking of the loss landscape of neural networks as a long valley with increasingly tightening walls (see bottom picture) which is stochastically translated in random directions at every minibatch can elegantly explain the following 4 puzzling phenomena observed in network training: 
+It turns out that thinking of the loss landscape of neural networks as a long valley with increasingly tightening walls (see picture below) which is stochastically translated (but not stretched) in random directions at every minibatch can elegantly explain the following 4 puzzling phenomena observed in network training: 
 1. Sharp Loss Decrease at every Learning Rate decrease
 2. Equivalence Between High Batch Size and Low Learning Rate
 3. Highest eigenvalue of the Hessian rises when Learning Rate drops
 4. Negative Eigenvalues of the Hessian Persist throughout training
+
+We replicate all 4 effects above in the context of a small resnet trained on cifar10 and provide evidence for the "stochastic narrowing valley" hypothesis by first solving the dynamics of SGD-with-momentum for a stochastic quadratic function, then by computing the eigenspectrum of the hessian of the resnet at many training checkpoints.
 
 ![curving_valley_1.png](images%2Fcurving_valley_1.png)
 
