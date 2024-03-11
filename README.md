@@ -64,11 +64,11 @@ $$x_{n+1} = x_n - 2\alpha \lambda x_n + \epsilon^*$$
 $$ x_{n+1} = x_n\bigg(1-2\alpha\lambda\bigg) + \epsilon^* $$
 
 
-Where $\epsilon^* \sim N\big(0, (2\alpha\lambda\sigma)^2\big) = N(0, \eta^2)$, introducing a new variable $\eta$ for later convenience. Now, the randomness injected via $\epsilon^*$ will be counterbalanced by the shrinking with factor $\bigg(1-2\alpha\lambda\bigg)$, and at equilibrium we'd expect both effects to counterbalance each other. If we assume that at equilibrium each $x_n$ to be independent of $x_{n-1}$ and distributed according to a visitation distribution $p(x) = N(0, s^2)$, we can solve for $s^2$ and obtain the following result:
+Where $\epsilon^* \sim N\big(0, (2\alpha\lambda\sigma)^2\big) = N(0, \eta^2)$, introducing a new variable $\eta$ for later convenience. Now, the randomness injected via $\epsilon^*$ will be counterbalanced by the shrinking with factor $\bigg(1-2\alpha\lambda\bigg)$, and at equilibrium we'd expect both effects to counterbalance each other. If we assume that at equilibrium each $x_n$ to be independent of $x_{n-1}$ and distributed according to a simple gaussian $p(x) = N(0, s^2)$, we can solve for $s^2$ and obtain the following result:
 
 $$ s^2 = \frac{\alpha\lambda\sigma^2}{1-\alpha\lambda}$$
 
-and hence that the expected value of the function $\lambda x^2$ at equilibrium is
+This corresponds to the variance of $x$ as it is bumped around the minimum of the quadratic by noise. And hence that the expected value of the function $\lambda x^2$ at equilibrium is
 
 $$ E\[\lambda x^2\] = \lambda s^2 = \frac{\alpha\lambda^2\sigma^2}{1-\alpha\lambda}$$
 
@@ -188,15 +188,15 @@ The positive eigenvalue directions behave as the toy model expected, but what ab
 
 - Again the function shape remains fairly consistent batch-to-batch, almost every function has two local minima, and they all cluster around the same two points on the x-axis.
 - one of the two local minima is clearly lower than the other, but not all minibatches agree on which of the two is the correct one.
-- The most surprising fact here is that these directions have not yet been optimised away. In these plots the middle point represents the unchanged parameters of the network, i.e $f_i(\theta + 0 v_\lambda)$, and we see that this point lies at a local maximum of the function. These negative eigenvalues are also quite large, it's not the case that this direction is just too flat for SGD to make progress. **Some unknown mechanism** is keeping the network at a local maximum in this direction. See section 10 for a plausible hypothesis for what's going on.
+- The most surprising fact here is that these directions have not yet been optimised away. In these plots the middle point represents the unchanged parameters of the network, i.e $f_i(\theta + 0 v_\lambda)$, and we see that this point lies at a local maximum of the function. These negative eigenvalues are also quite large, it's not the case that this direction is just too flat for SGD to make progress. **Some unknown mechanism** is keeping the network at a local maximum in this direction.
 
 ### How does the variance of the minimum location vary with eigenvalue?
 
-The toy quadratic model has a free parameter $\sigma^2$, the variance of the minimum location computed across minibatches. A priori this variance is free to depend on the eigenvalue $\lambda$, so let's plot $\sigma^2$ against the positive $\lambda$:
+The toy quadratic model has a free parameter $\sigma^2$, the variance of the minimum location computed across minibatches. A priori this variance is free to depend on the eigenvalue $\lambda$, so let's plot $\sigma$ against the positive $\lambda$:
 
 ![min_std_vs_eigenvalue.png](images%2Fmin_std_vs_eigenvalue.png)
 
-So we see a decrease in variance for larger eigenvalues, but notice the log scale on the x-axis: an order of magnitude increase in eigenvalue gives us a measly $\sim 0.3$ decrease in standard deviation. The low eigenvalues have much less noise than they should have .
+So we see a decrease in standard deviation for larger eigenvalues, but notice the log scale on the x-axis: an order of magnitude increase in eigenvalue gives us a measly $\sim 0.3$ decrease in standard deviation. The low eigenvalues have much less noise than we might have expected of them.
 
 ### How does the equilibrium std-dev $s$ vary with eigenvalue?
 
@@ -328,9 +328,12 @@ The narrowing valley hypothesis makes one unambiguous prediction that we should 
 
 Note also that this is a non-trivial prediction. If the loss landscape could be well approximated merely by a quadratic function where some of the eigenvalues were negative (i.e. the typical saddle shape), then we would not expect that minimizing the positive eigendirections would have any effect at all on the negative spectrum. Nor would we expect the positive directions to influence the negative ones if the loss could be factorised into $f(x) = f_{+}(v_1, ... v_n) \times f_{-}(w_1, ... , w_n)$, a product of the positive eigenspace and the negative eigenspace.
 
-To test this prediction in our small but non trivial model. We pick again the iteration=10000 checkpointed network, and perform *full batch* SGD for 1000 iterations with lr=1e-3 and momentum=0.9 in the subspace defined by the top n eigenvectors, where n will vary on a logarithmic scale from 6 to 2000. After having found the local minimum within that subspace, we compute the bottom 2000 negative eigenvalues of the network at that point (computing the whole Hessian is too expensive here), and plot both the sum of all negative eigenvalues, and their number:
+To test this prediction in our small but non trivial model. We pick again the iteration=10000 checkpointed network, and perform *full batch* SGD for 1000 iterations with lr=1e-3 and momentum=0.9 in the subspace defined by the top n eigenvectors, where n will vary on a logarithmic scale from 6 to 2000. After having found the local minimum within that subspace, we compute the bottom 2000 negative eigenvalues of the network at that point (computing the whole Hessian is too expensive here), and plot the negative spectrum for multiple values of n, the number of top eigenvectors we optimise:
 
-(*experiment still running*, but preliminary results show that the hypothesis is confirmed: optimising high eigenvalue directions does reduce the overall power in negative eigenvalues very consistently.)
+![curving_valley_testing.png](images%2Fcurving_valley_testing.png)
+
+And we see a very robust decrease in the magnitude of negative eigenvalues as we optimise more and more high eigenvalues.
+
 
 [//]: # (graph with total negative eigenpower vs optimised high eigenvalue dimensions)
 

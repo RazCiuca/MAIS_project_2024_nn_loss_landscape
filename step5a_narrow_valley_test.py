@@ -77,10 +77,10 @@ if __name__ == "__main__":
 
     # save eigenvals and vectors
     # t.save((top_eigvals, top_eigvecs), "models/resnet9_cifar10/valley_testing/init_top_eigstuff.pth")
-    # t.save((bottom_eigvals, bottom_eigvecs), "models/resnet9_cifar10/valley_testing/init_bottom_eigstuff.pth")
+    # t.save((bottom_eigvals, bottom_eigvecs), "models/resnet9_cifar10/valley_testing/0_optim_bottom_eigstuff.pth")
 
     top_eigvals, top_eigvecs = t.load("models/resnet9_cifar10/valley_testing/init_top_eigstuff.pth")
-    bottom_eigvals, bottom_eigvecs = t.load("models/resnet9_cifar10/valley_testing/init_bottom_eigstuff.pth")
+    bottom_eigvals, bottom_eigvecs = t.load("models/resnet9_cifar10/valley_testing/0_optim_bottom_eigstuff.pth")
 
     print(f"total negative power: {bottom_eigvals[bottom_eigvals<0].sum():.6f}")
 
@@ -91,7 +91,8 @@ if __name__ == "__main__":
     n_steps = 30
 
     # ns = np.ceil(np.exp(np.arange(2, np.log(top_k), np.log(top_k)/n_steps))).astype(np.int64)
-    ns = [50, 100, 250, 500, 1000, 2000]
+    # ns = [50, 100, 250, 500, 1000, 2000]
+    ns = [25, 12, 6]
 
     for n in ns:
 
