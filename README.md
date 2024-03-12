@@ -334,7 +334,6 @@ To test this prediction in our small but non trivial model. We pick again the it
 
 And we see a very robust decrease in the magnitude of negative eigenvalues as we optimise more and more high eigenvalues.
 
-
 [//]: # (graph with total negative eigenpower vs optimised high eigenvalue dimensions)
 
 ## 9. Conclusion and Further Questions <a name="9-conclusion"></a>
