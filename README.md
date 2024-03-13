@@ -351,6 +351,7 @@ Future directions:
 - What features of the data and/or the learned representations are responsible for the high/low eigenvalues, and the narrowing effect of the landscape? 
 - Can we determine an optimal learning rate schedule from our knowledge of the eigenvalue spectrum and the noise level in each dimension? 
 - Can we design architectures whose loss functions exhibit less of a narrowing effect, thereby being trainable with higher learning rates? 
+- Can we design architectures where most of the high-$\lambda$ vectors are sequestered to a small number of network components? This would allow us to use much higher learning rates in the rest of the network without risking divergence.
 - How do we efficiently minimise noise in the larger eigenvalues while still making large steps in the low-eigenvalue directions?
 
 ## Appendix: Derivation of Equilibrium Distribution for SGD with Momentum <a name="sgd-mom-derivation"></a>
