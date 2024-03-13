@@ -347,6 +347,7 @@ And we see a very robust decrease in the magnitude of negative eigenvalues as we
 Future directions:
 - Do these results generalise to larger Resnets, what about transformer architectures?
 - Are the very small (in absolute terms) eigenvalues important to minimize? Could we restrict the optimisation to a few of the highest eigenvectors as well as the negative vectors, and not lose meaningful performance?
+- What, if any, is the connection with the Lottery Ticket Hypothesis?
 - Which features of the loss landscape are responsible for overfitting? i.e. should we **want** to go down the narrowing valley, or is going down the valley the price we pay for needing to find the minimum of the high eigenvalues?
 - What features of the data and/or the learned representations are responsible for the high/low eigenvalues, and the narrowing effect of the landscape? 
 - Can we determine an optimal learning rate schedule from our knowledge of the eigenvalue spectrum and the noise level in each dimension? 
