@@ -117,6 +117,12 @@ On quadratic functions for which $\alpha\lambda << 1$, i.e. those functions with
 
 Hence the real impact of momentum is to allow the very small eigenvalues to have effective learning rates of $\alpha/(1-\gamma)$ while still preventing divergence on the large eigenvalues of our function.
 
+### Relationship to Bayesian Posterior Sampling, why does noise help generalisation?
+
+If we imagine sampling the parameters from their posterior distribution, we would expect the variance in each eigendirection to be $1/s^2 \propto \lambda$, because we'd approximately be sampling from a MVN with covariance given by $H = \Sigma^{-1}$. Yet the equilibrium variance we obtain from SGD is $s^2 = \frac{\alpha\lambda\sigma^2}{1-\alpha\lambda}$. We see that the $\lambda$ dependence has the wrong form, we are missing a factor proportional to $1/\lambda^2$ in order for the stochasticity caused by SGD to simulate sampling from the posterior. We can make the SGD equilibrium noise closer to bayesian sampling by making $\sigma^2$ and/or the learning rate $\alpha$ depend on eigenvalue, in both cases we need higher values of $\sigma^2$ and $\alpha$ at low $\lambda$.
+
+This suggests a mechanism through which different optimisation algorithms and noise injection schemes might be helping generalisation: they're changing $\sigma^2$ and $\alpha$ in each eigendirection in a way that makes the equilibrium distribution better match the posterior distribution.
+
 ### What does the Simple Quadratic Model teach us?
 
 The fundamental lesson of this simple model is likely that **the noise in our optimisation function** is a crucial factor to keep in mind when thinking about loss landscapes. Mysteries #1 and #2 above are fundamentally noisy phenomena. This toy model is also evidence against the landscape being somehow fractal in nature given that we don't need to invoke such a complicated structure to explain the sharp loss decreases.
