@@ -247,7 +247,7 @@ As we can see, something goes terribly wrong: the toy model is predicting a tota
 ## 5. Is there Structure in the Eigenvectors components? <a name="5-eigvec-structure"></a>
 Switching gears a bit for the moment, let's look at the eigenvectors corresponding to each of our eigenvalues and try to figure out if there's any internal structure to them that we can find. An eigenvector $v_\lambda$ will by construction have unit norm, i.e. $\sum_i v_{\lambda, i}^2 = 1$, but let's figure out how sharply concentrated those $v_{\lambda, i}^2$ values are. Do we have a few components that dominate the norm, or is it pretty much indistinguishable from a gaussian normal vector? 
 
-To do this, for each vector $v_{\lambda}$, sort the values $v_{\lambda, i}^2$ into $v_{\text{sorted},\lambda, i}^2$, and compute the cumulative sum $\sum^n_i  v_{\text{sorted},\lambda, i}^2$. This is what we plot below, with red curves corresponding to high $\lambda$ vectors, and bluer curves to low $\lambda$. The lone black curve is what we would expect to see from a gaussian distribution of components
+To do this, for each vector $v_{\lambda}$, sort the values $v_{\lambda, i}^2$ from highest to lowest into $v_{\text{sorted},\lambda, i}^2$, and compute the cumulative sum $\sum^n_i  v_{\text{sorted},\lambda, i}^2$. This is what we plot below, with red curves corresponding to high $\lambda$ vectors, and bluer curves to low $\lambda$. The lone black curve is what we would expect to see from a gaussian distribution of components
 
 
 ![cumul_power_pos_eigvec.png](images%2Fcumul_power_pos_eigvec.png)
