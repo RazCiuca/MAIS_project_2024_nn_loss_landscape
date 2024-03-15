@@ -1,1 +1,11 @@
 
+- are we falling into the same sharp valley in different draws of batches?
+    -> i.e. if we're at equilibrium at some learning rate, and we pick various different
+       points to drop the learning rate, do we end up down the same valley?
+    ->
+
+- how much support does each eigendirection have over our examples?
+    -> are the high eigenvalues due to all datapoints having medium contributions?
+       or are a few examples really driving those values?
+       what about the negative ones?
+

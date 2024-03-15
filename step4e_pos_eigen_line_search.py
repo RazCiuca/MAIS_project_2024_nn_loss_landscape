@@ -198,7 +198,7 @@ if __name__ == "__main__":
 
     losses = vis_var*eigvals
     print('starting to compute losses')
-    losses2 = np.array([empirical_expected_loss(eig, noise_std, 1e-1, 0.97) for eig, noise_std in zip(eigvals, true_std)])
+    losses2 = np.array([empirical_expected_loss(eig, noise_std, 1e-1, 0.97) for eig, noise_std in zip(eigvals/2, true_std)])
 
     # plt.plot(eigvals, np.cumsum(losses[::-1])[::-1], label='expected cumul loss')
     plt.plot(eigvals, np.cumsum(losses2[::-1])[::-1], label='expected cumul loss')

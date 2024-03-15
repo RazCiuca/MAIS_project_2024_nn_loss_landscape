@@ -123,6 +123,7 @@ If we imagine sampling the parameters from their posterior distribution, we woul
 
 This suggests a mechanism through which different optimisation algorithms and noise injection schemes might be helping generalisation: they're changing $\sigma^2$ and $\alpha$ in each eigendirection in a way that makes the equilibrium distribution better match the posterior distribution.
 
+
 ### What does the Simple Quadratic Model teach us?
 
 The fundamental lesson of this simple model is likely that **the noise in our optimisation function** is a crucial factor to keep in mind when thinking about loss landscapes. Mysteries #1 and #2 above are fundamentally noisy phenomena. This toy model is also evidence against the landscape being somehow fractal in nature given that we don't need to invoke such a complicated structure to explain the sharp loss decreases.
@@ -345,6 +346,8 @@ And we see a very robust decrease in the magnitude of negative eigenvalues as we
 ## 9. Conclusion and Further Questions <a name="9-conclusion"></a>
 
 Future directions:
+- Are there many different narrowing valleys we could fall down into? i.e. if we're oscillating at equilibrium at some learning rate, does the particular point at which we decide to drop the learning rate send us down different narrowing valleys? Or does it not matter?
+- How much support do the high eigenvectors have over the data? i.e. are the high eigenvalues due to all datapoints having large dependence on those directions, or do a small number of points have an outsized impact on them?
 - Do these results generalise to larger Resnets, what about transformer architectures?
 - Are the very small (in absolute terms) eigenvalues important to minimize? Could we restrict the optimisation to a few of the highest eigenvectors as well as the negative vectors, and not lose meaningful performance?
 - What, if any, is the connection with the Lottery Ticket Hypothesis?
