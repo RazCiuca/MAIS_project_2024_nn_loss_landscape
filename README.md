@@ -325,6 +325,7 @@ This simplified model also provides a possible explanation for the "Edge Of Stab
 3. While we oscillate in the high- $\lambda$ directions, negative eigenvalues don't go away because we keep jumping over the narrow region where the negative values would disappear.
 4. When we finally decrease the learning rate (or increase the batch size) by some fixed amount, two things happen: first, the high- $\lambda$ directions drop to a lower equilibrium level, which quickly drops the loss. Then, because we're now oscillating at a lower level, we can correctly "see" the gradient in the narrowing valley directions, this lets us optimise those directions, leading to a further drop in loss. 
 5. We settle into a new equilibrium at some point down the narrow valley, the largest eigenvalue of the Hessian increases to reflect the narrowing walls of the new equilibrium point (Edge of Stability effect), and the whole process repeats at the next learning rate drop.
+6. 
 
 This story seems to concisely explain the "4 mysteries" of training neural networks that we considered at the beginning of this post. Sharp loss decreases, high-batch-low-lr equivalence, the edge of stability, and persistent negative eigenvalues are all effects that naturally fall out of a stochastic landscape where some directions have narrowing valleys.
 
