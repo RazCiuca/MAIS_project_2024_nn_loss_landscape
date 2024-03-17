@@ -111,12 +111,19 @@ if __name__ == "__main__":
     last_accuracy = [0]
 
     start = time.time()
+
+    all_indices = np.random.permutation(np.arange(n_data))
+    all_indices = np.concatenate([all_indices, all_indices[:batch_size].copy()])
+
     for iter in range(n_iter):
 
         model.train()
 
         # sample batch, send to gpu
-        batch_indices = np.random.permutation(np.arange(n_data))[:batch_size]
+        n_diff_between_batch = 256
+        i1 = (iter*n_diff_between_batch) % n_data
+        i2 = i1 + batch_size
+        batch_indices = all_indices[i1:i2]
 
         # batch_indices_total.append(t.from_numpy(batch_indices))
 
@@ -142,8 +149,8 @@ if __name__ == "__main__":
 
             print(f"i:{iter}/{n_iter} --- time remaining:{time_remaining:.1f}s --- loss:{plot_average.item():.7f} --- top-1:{last_accuracy[0]:.4f} --- top-5: {last_accuracy[-1]:.4f}")
 
-        if iter%100 == 0:
-            t.save(model.state_dict(), f'models/resnet9_cifar10/model_{iter}.pth')
+        # if iter%100 == 0:
+        #     t.save(model.state_dict(), f'models/resnet9_cifar10/model_{iter}.pth')
 
 
         # changing learning rate once in a while

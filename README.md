@@ -325,7 +325,6 @@ This simplified model also provides a possible explanation for the "Edge Of Stab
 3. While we oscillate in the high- $\lambda$ directions, negative eigenvalues don't go away because we keep jumping over the narrow region where the negative values would disappear.
 4. When we finally decrease the learning rate (or increase the batch size) by some fixed amount, two things happen: first, the high- $\lambda$ directions drop to a lower equilibrium level, which quickly drops the loss. Then, because we're now oscillating at a lower level, we can correctly "see" the gradient in the narrowing valley directions, this lets us optimise those directions, leading to a further drop in loss. 
 5. We settle into a new equilibrium at some point down the narrow valley, the largest eigenvalue of the Hessian increases to reflect the narrowing walls of the new equilibrium point (Edge of Stability effect), and the whole process repeats at the next learning rate drop.
-6. 
 
 This story seems to concisely explain the "4 mysteries" of training neural networks that we considered at the beginning of this post. Sharp loss decreases, high-batch-low-lr equivalence, the edge of stability, and persistent negative eigenvalues are all effects that naturally fall out of a stochastic landscape where some directions have narrowing valleys.
 
@@ -347,6 +346,7 @@ And we see a very robust decrease in the magnitude of negative eigenvalues as we
 ## 9. Conclusion and Further Questions <a name="9-conclusion"></a>
 
 Future directions:
+- Why does it take so long to optimise neural networks? Can use the narrowing valley hypothesis to build a model which lets us accurately predict the loss given a learning rate schedule and optimisation algorithm?
 - Are there many different narrowing valleys we could fall down into? i.e. if we're oscillating at equilibrium at some learning rate, does the particular point at which we decide to drop the learning rate send us down different narrowing valleys? Or does it not matter?
 - How much support do the high eigenvectors have over the data? i.e. are the high eigenvalues due to all datapoints having large dependence on those directions, or do a small number of points have an outsized impact on them?
 - Do these results generalise to larger Resnets, what about transformer architectures?
