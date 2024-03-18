@@ -15,7 +15,7 @@
 
 ## 0. TL;DR <a name="0-tldr"></a>
 
-In this blog post I attempt to answer the following questions:
+In this blog post I attempt to answer the following questions about the behavior of neural networks trained by supervised learning:
 
 1. why does lowering the learning rate during training result in a sharp drop in error?
 2. why is increasing the batch size equivalent to lowering the learning rate? 
@@ -25,6 +25,8 @@ In this blog post I attempt to answer the following questions:
 It turns out that thinking of the loss landscape of neural networks as a long valley with increasingly tightening walls (see picture below) which is stochastically translated (but not stretched) in random directions at every minibatch can elegantly answer these 4 questions.
 
 I replicate all 4 effects above in the context of a small resnet trained on cifar10 and provide evidence for the "stochastic narrowing valley" hypothesis by first solving the dynamics of SGD-with-momentum for a stochastic quadratic function, then by computing the eigenspectrum of the hessian of the resnet at many training checkpoints.
+
+The most crucial sections for understanding the point of this blog post are sections 2 and 7, which together describe the 2D toy landscape that answers the 4 questions above. If you don't have much time, read only those two sections.
 
 ![curving_valley_1.png](images%2Fcurving_valley_1.png)
 
