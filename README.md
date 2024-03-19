@@ -351,9 +351,9 @@ $$f(x,y) \approx \lambda_1 (x-x_{\text{min}} - \epsilon_x)^2 + \lambda_2 (y-\eps
 $$\frac{df(x,y)}{dx} = 2\lambda_1 (x-x_{\text{min}}- \epsilon_x) + \beta\lambda_2 (y-\epsilon_y)^2$$
 
 Where here $\epsilon_x$ and $\epsilon_y$ are gaussian random variables with variances $\sigma_x^2, \sigma_y^2$  to simulate minibatches, they simply translate the landscape stochastically.
-\\
+
 we wish to find the expected derivative in the x-direction, averaging over both the noise in the landscape, and the randomness induced by the equilibrium distribution in the y-direction.
-\\
+
 Taking the expectation of the x-derivative under a gaussian in the y-direction with variance $s^2$:
 
 $$E_y\[\frac{df(x,y)}{dx}\] = 2\lambda_1 (x-x_{\text{min}}-\epsilon_x) + \beta\lambda_2 (E_y\[y^2\] + 2E\[y\]\epsilon_y + \epsilon_y^2)$$
