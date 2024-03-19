@@ -26,7 +26,7 @@ It turns out that thinking of the loss landscape of neural networks as a long va
 
 I replicate all 4 effects above in the context of a small resnet trained on cifar10 and provide evidence for the "stochastic narrowing valley" hypothesis by first solving the dynamics of SGD-with-momentum for a stochastic quadratic function, then by computing the eigenspectrum of the hessian of the resnet at many training checkpoints.
 
-The most crucial sections for understanding the point of this blog post are sections 2 and 7, which together describe the 2D toy landscape that answers the 4 questions above. If you don't have much time, read only those two sections.
+The most crucial sections for understanding the point of this blog post are sections 2, 7 and 8, which together describe the 2D toy landscape that answers the 4 questions above. If you don't have much time, read only those sections.
 
 ![curving_valley_1.png](images%2Fcurving_valley_1.png)
 
