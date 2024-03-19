@@ -375,6 +375,15 @@ Which contains a squared dependence on the variances, and hence a quadratic depe
 
 This phenomenon might explain why low batch sizes generalise better: using low learning rate at low batch sizes lets us perfectly optimise the positive-eigenvalue directions, but gets us stuck partway down the narrowing valleys because of the above effect. If the narrowing valleys correspond to directions which learn overfitted features, then getting stuck halfway would actually be desirable. That is, *we should not want* to fall down the valley, but it's the price we pay for needing to optimise the positive-$\lambda$ directions. 
 
+### The multivariate extension to the narrowing valley model
+
+
+The simplest way to generalise the narrowing valley model to n dimensions is to assume that all eigenvalues increase by the same multiplicative function (which is really a taylor expansion of an unknown "sharpening" function):
+
+$$f(\mathbf{x}) = \mathbf{x}^T Q^T \bigg(\Lambda \cdot (1+|\beta^T (\mathbf{x} - \mathbf{x}_0)|)\bigg) Q \mathbf{x}$$
+Where $Q$ is an orthonormal matrix, $\Lambda$ is a diagonal matrix with all positive components. 
+
+Questions: what does this model predict for the negative eigenvalues? does this predict changing eigenvectors? Does this reproduce the effects we've seen with the 2D toy model.
 
 ## 9. Conclusion and Further Questions <a name="9-conclusion"></a>
 
