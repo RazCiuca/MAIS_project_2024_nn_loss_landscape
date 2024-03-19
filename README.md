@@ -343,7 +343,32 @@ To test this prediction in our small but non trivial model. We pick again the it
 
 And we see a very robust decrease in the magnitude of negative eigenvalues as we optimise more and more high eigenvalues.
 
-[//]: # (graph with total negative eigenpower vs optimised high eigenvalue dimensions)
+### (unfinished) High batch size is not equivalent to low learning rate after all
+
+Near a point in the valley, we can approximate the stochastic loss near a point $(x_0, 0)$ as simply
+
+$$f(x,y) \approx \lambda_1 (x-x_{\text{min}} - \epsilon_x)^2 + \lambda_2 (y-\epsilon_y)^2 \beta (x-x_0)$$
+$$\frac{df(x,y)}{dx} = 2\lambda_1 (x-x_{\text{min}}- \epsilon_x) + \beta\lambda_2 (y-\epsilon_y)^2$$
+
+Where here $\epsilon_x$ and $\epsilon_y$ are gaussian random variables with variances $\sigma_x^2, \sigma_y^2$  to simulate minibatches, they simply translate the landscape stochastically.
+\\
+we wish to find the expected derivative in the x-direction, averaging over both the noise in the landscape, and the randomness induced by the equilibrium distribution in the y-direction.
+\\
+Taking the expectation of the x-derivative under a gaussian in the y-direction with variance $s^2$:
+
+$$E_y\[\frac{df(x,y)}{dx}\] = 2\lambda_1 (x-x_{\text{min}}-\epsilon_x) + \beta\lambda_2 (E_y\[y^2\] + 2E\[y\]\epsilon_y + \epsilon_y^2)$$
+$$E_y\[\frac{df(x,y)}{dx}\] = 2\lambda_1 (x-x_{\text{min}}-\epsilon_x) + \beta\lambda_2 (s^2 + \epsilon_y^2)$$
+
+Now averaging over the noise $\epsilon_y$ and $\epsilon_x$:
+$$E_{\epsilon}\[E_y\[\frac{df(x,y)}{dx}\]\] = 2\lambda_1 (x-x_{\text{min}}) + \beta\lambda_2 (s^2 + \sigma_y^2)$$
+We see that the noise in the equilibrium distribution and the landscape noise itself induce spurious terms that push up away from the minimum $x_\text{min}$. Setting this expected derivative to $0$, we can compute the equilibrium point of sgd down the valley for a given noise level:
+$$0= 2\lambda_1 (x-x_{\text{min}}) + \beta\lambda_2 (s^2 + \sigma_y^2)$$
+$$x_{\text{min}}-x= \frac{\beta\lambda_2}{2\lambda_1} (s^2 + \sigma_y^2)$$
+
+And so obtain a surprising prediction: lowering the equilibrium variance $s^2$ is not enough to make us go down the valley all the way. We also need the landscape noise $\sigma_y^2$ to go down to zero. In nn training terms: lowering the learning rate (lowering only $s^2$) is not totally equivalent to increasing the batch size (lowering both $s^2$ and $\sigma_y^2$)
+
+This phenomenon might explain why low batch sizes generalise better: using low learning rate at low batch sizes lets us perfectly optimise the positive-eigenvalue directions, but gets us stuck partway down the narrowing valleys because of the above effect. If the narrowing valleys correspond to directions which learn overfitted features, then getting stuck halfway would actually be desirable. That is, *we should not want* to fall down the valley, but it's the price we pay for needing to optimise the positive-$\lambda$ directions. 
+
 
 ## 9. Conclusion and Further Questions <a name="9-conclusion"></a>
 
@@ -360,6 +385,9 @@ Future directions:
 - Can we design architectures whose loss functions exhibit less of a narrowing effect, thereby being trainable with higher learning rates? 
 - Can we design architectures where most of the high- $\lambda$ vectors are sequestered to a small number of network components? This would allow us to use much higher learning rates in the rest of the network without risking divergence.
 - How do we efficiently minimise noise in the larger eigenvalues while still making large steps in the low-eigenvalue directions?
+- do the eigenvectors of the network change when oscillating at equilibrium? what causes their change?
+- can we predict oscillations in and out of the valley due to sgd noise?
+- does weight decay and/or grad clipping meaningfully affect these results?
 
 ## Appendix: Derivation of Equilibrium Distribution for SGD with Momentum <a name="sgd-mom-derivation"></a>
 
