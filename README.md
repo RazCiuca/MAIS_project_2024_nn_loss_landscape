@@ -367,6 +367,12 @@ $$x_{\text{min}}-x= \frac{\beta\lambda_2}{2\lambda_1} (s^2 + \sigma_y^2)$$
 
 And so obtain a surprising prediction: lowering the equilibrium variance $s^2$ is not enough to make us go down the valley all the way. We also need the landscape noise $\sigma_y^2$ to go down to zero. In nn training terms: lowering the learning rate (lowering only $s^2$) is not totally equivalent to increasing the batch size (lowering both $s^2$ and $\sigma_y^2$)
 
+The expected loss contribution from the narrowing valley direction will be:
+
+$$E\[\lambda_1(x-x_{\text{min}})^2\] = \frac{\beta^2\lambda_2^2}{4\lambda_1} (s^2 + \sigma_y^2)^2$$
+
+Which contains a squared dependence on the variances, and hence a quadratic dependence on the batch size. The loss in the narrowing directions goes like $1/\text{batch}^2$.
+
 This phenomenon might explain why low batch sizes generalise better: using low learning rate at low batch sizes lets us perfectly optimise the positive-eigenvalue directions, but gets us stuck partway down the narrowing valleys because of the above effect. If the narrowing valleys correspond to directions which learn overfitted features, then getting stuck halfway would actually be desirable. That is, *we should not want* to fall down the valley, but it's the price we pay for needing to optimise the positive-$\lambda$ directions. 
 
 
