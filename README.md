@@ -347,7 +347,7 @@ And we see a very robust decrease in the magnitude of negative eigenvalues as we
 
 Near a point in the valley, we can approximate the stochastic loss near a point $(x_0, 0)$ as simply
 
-$$f(x,y) \approx \lambda_1 (x-x_{\text{min}} - \epsilon_x)^2 + \lambda_2 (y-\epsilon_y)^2 \beta (x-x_0)$$
+$$f(x,y) \approx \lambda_1 (x-x_{\text{min}} - \epsilon_x)^2 + \lambda_2 (y-\epsilon_y)^2 (1+\beta (x-x_0))$$
 $$\frac{df(x,y)}{dx} = 2\lambda_1 (x-x_{\text{min}}- \epsilon_x) + \beta\lambda_2 (y-\epsilon_y)^2$$
 
 Where here $\epsilon_x$ and $\epsilon_y$ are gaussian random variables with variances $\sigma_x^2, \sigma_y^2$  to simulate minibatches, they simply translate the landscape stochastically.
