@@ -375,6 +375,8 @@ Which contains a squared dependence on the variances, and hence a quadratic depe
 
 This phenomenon might explain why low batch sizes generalise better: using low learning rate at low batch sizes lets us perfectly optimise the positive-eigenvalue directions, but gets us stuck partway down the narrowing valleys because of the above effect. If the narrowing valleys correspond to directions which learn overfitted features, then getting stuck halfway would actually be desirable. That is, *we should not want* to fall down the valley, but it's the price we pay for needing to optimise the positive-$\lambda$ directions. 
 
+Notice that we've found an exception to SGD convergence! How is this possible, is the SGD proof incorrect? Well, no, the proof says we will converge to a point where the expected gradient is 0, and that is indeed what we find, it's just that the point at which $E\[\nabla f\] = 0$ is not a local minimum of our function.
+
 ### The multivariate extension to the narrowing valley model
 
 
