@@ -369,13 +369,15 @@ These changes are to first order in $\mathbf{x}-\mathbf{x}_0$, we can do perturb
 
 From the perturbation theory of linear operators, the first order change in an eigenvalue $\lambda$ will simply be 
 
-$$\delta \lambda =  v_{\lambda}^T \Delta H v_{\lambda}$$
+$$\delta \lambda =  v_{\lambda}^T (\Delta H) v_{\lambda}$$
 
 where $v_{\lambda}$ is the eigenvector of $H$ with eigenvalue $\lambda$. So we get the following:
 
-$$\delta \lambda = (\beta^T (\mathbf{x} - \mathbf{x}_0))\lambda + v_{\lambda}^T\bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta^Tv_{\lambda} + v_{\lambda}^T\beta \bigg(H(\mathbf{x}-\mathbf{x}_0)\bigg)^T v_{\lambda}$$
+$$\delta\lambda = (\beta^T (\mathbf{x} - \mathbf{x}_0 )) 
 
-$$\lambda' = \lambda \bigg( 1 + \beta^T (\mathbf{x} - \mathbf{x}_0) + 2\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x}_0)\bigg) \bigg(\beta^Tv_{\lambda}\bigg)\bigg)$$
+\lambda + v_{\lambda}^T \bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg)
+
+\beta^T v_{\lambda} + v_{\lambda}^T\beta v_{\lambda}\bigg( H(\mathbf{x} - \mathbf{x}_0) \bigg)^T$$
 
 ## 10. Conclusion and Further Questions <a name="9-conclusion"></a>
 
