@@ -12,7 +12,7 @@
 7. [A plausible hypothesis: Narrowing Valleys](#7-valley-hypothesis)
 8. [Testing the Narrowing Valley Hypothesis](#8-testing-valley)
 9. [The multivariate narrowing valley model](#9-multivariate-narrow-valley)
-10.[Conclusion and Further Questions](#9-conclusion)
+10. [Conclusion and Further Questions](#9-conclusion)
 
 ## 0. TL;DR <a name="0-tldr"></a>
 
