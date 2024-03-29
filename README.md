@@ -11,7 +11,8 @@
 6. [Are the Eigenvectors Mostly Constant?](#6-eigvec-constant)
 7. [A plausible hypothesis: Narrowing Valleys](#7-valley-hypothesis)
 8. [Testing the Narrowing Valley Hypothesis](#8-testing-valley)
-9. [Conclusion and Further Questions](#9-conclusion)
+9. [The multivariate narrowing valley model](#9-multivariate-narrow-valley)
+10.[Conclusion and Further Questions](#9-conclusion)
 
 ## 0. TL;DR <a name="0-tldr"></a>
 
@@ -345,7 +346,7 @@ To test this prediction in our small but non trivial model. We pick again the it
 
 And we see a very robust decrease in the magnitude of negative eigenvalues as we optimise more and more high eigenvalues.
 
-## 9. The multivariate narrowing valley model
+## 9. The multivariate narrowing valley model <a name="9-multivariate-narrow-valley"></a>
 
 ### Linear model
 
@@ -358,13 +359,13 @@ $$\nabla_x f(\mathbf{x}) = (1+(\beta^T (\mathbf{x} - \mathbf{x}_0))) \cdot \bigg
 
 $$\nabla^2_x f(\mathbf{x}) = (1+(\beta^T (\mathbf{x} - \mathbf{x}_0)))H + \bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta^T + \beta \bigg(H(\mathbf{x}-\mathbf{x}_0)\bigg)^T$$
 
-This model has the same minimum as the usual quadratic approximation, and has the same hessian at the minimum itself, but the hessian changes for small displacements from the minimum, by an amount given by:
+This model has the same minimum as the usual quadratic approximation, and has the same hessian at the minimum itself, but the hessian changes for small displacements from the minimum by an amount given by:
 
 $$\Delta H = (\beta^T (\mathbf{x} - \mathbf{x}_0))H + \bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta^T + \beta \bigg(H(\mathbf{x}-\mathbf{x}_0)\bigg)^T $$
 
 These changes are to first order in $\mathbf{x}-\mathbf{x}_0$, we can do perturbation theory in that parameter to find how the spectrum is changing near the minimum.
 
-### Computing Hessian Spectrum Changes with Perturbation Theory
+### Computing Hessian Spectrum Changes with Perturbation Theory 
 
 
 From the perturbation theory of linear operators, the first order change in an eigenvalue $\lambda$ will simply be 
@@ -373,13 +374,13 @@ $$\delta \lambda =  v_{\lambda}^T (\Delta H) v_{\lambda}$$
 
 where $v_{\lambda}$ is the eigenvector of $H$ with eigenvalue $\lambda$. So we get the following:
 
-$$\lambda' = \lambda \bigg( 1 + \beta^T (\mathbf{x} - \mathbf{x_0}) + 2\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x_0})\bigg) \bigg(\beta^Tv_{\lambda}\bigg)\bigg)$$
-
-
 $$\delta\lambda = (\beta^T (\mathbf{x} - \mathbf{x_0} ))\lambda + v_{\lambda}^T\bigg(H (\mathbf{x}-\mathbf{x_0})\bigg) \beta^T v_{\lambda} + v_{\lambda}^T\beta \bigg(H(\mathbf{x}-\mathbf{x_0})\bigg)^T v_{\lambda}$$
 
+$$\lambda' = \lambda \bigg( 1 + \beta^T (\mathbf{x} - \mathbf{x_0}) + 2\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x_0})\bigg) \bigg(\beta^Tv_{\lambda}\bigg)\bigg)$$
 
-## 10. Conclusion and Further Questions <a name="9-conclusion"></a>
+Each eigenvalue $\lambda$ is scaled by a factor which depends first of all on $\beta^T (\mathbf{x} - \mathbf{x_0})$, which doesn't depend on $\lambda$, and second on $bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x_0})\bigg) \bigg(\beta^Tv_{\lambda}\bigg)$, which is going to depend on the details of the equilibrium distribution of $\mathbf{x}-\mathbf{x_0}$. 
+
+## 10. Conclusion and Further Questions <a name="10-conclusion"></a>
 
 Future directions:
 - Why does it take so long to optimise neural networks? Can use the narrowing valley hypothesis to build a model which lets us accurately predict the loss given a learning rate schedule and optimisation algorithm?
