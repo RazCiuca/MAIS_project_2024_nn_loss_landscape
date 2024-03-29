@@ -320,6 +320,8 @@ Again we see that only a thin band around $y=0$ is without negative eigenvalues.
 
 This simplified model also provides a possible explanation for the "Edge Of Stability" effect (eigenvalues increase as we decrease learning rate): as we decrease the learning rate, we decrease our variability in $y$, which lets us reach regions of the landscape where the valley walls are much narrower, and hence have much larger eigenvalues.
 
+### $E\[\nabla f(x)\] = 0$ doesn't imply a minimum!
+
 ### The Overall Story According to the Stochastic Narrow Valley Hypothesis
 
 1. We begin optimisation at some random point in the landscape, gradient descent quickly descents down high eigenvalue directions until it gets into equilibrium with the noise in those directions, then we oscillate in the high $\lambda$ directions with some variance $s^2$. However, the low-but-positive- $\lambda$ directions take longer to get optimised, and they benefit from keeping the learning rate higher for longer.
@@ -343,51 +345,39 @@ To test this prediction in our small but non trivial model. We pick again the it
 
 And we see a very robust decrease in the magnitude of negative eigenvalues as we optimise more and more high eigenvalues.
 
-### (unfinished) High batch size is not equivalent to low learning rate after all
+## 9. The multivariate narrowing valley model
 
-Near a point in the valley, we can approximate the stochastic loss near a point $(x_0, 0)$ as simply
-
-$$f(x,y) \approx \lambda_1 (x-x_{\text{min}} - \epsilon_x)^2 + \lambda_2 (y-\epsilon_y)^2 (1+\beta (x-x_0))$$
-$$\frac{df(x,y)}{dx} = 2\lambda_1 (x-x_{\text{min}}- \epsilon_x) + \beta\lambda_2 (y-\epsilon_y)^2$$
-
-Where here $\epsilon_x$ and $\epsilon_y$ are gaussian random variables with variances $\sigma_x^2, \sigma_y^2$  to simulate minibatches, they simply translate the landscape stochastically.
-
-we wish to find the expected derivative in the x-direction, averaging over both the noise in the landscape, and the randomness induced by the equilibrium distribution in the y-direction.
-
-Taking the expectation of the x-derivative under a gaussian in the y-direction with variance $s^2$:
-
-$$E_y\[\frac{df(x,y)}{dx}\] = 2\lambda_1 (x-x_{\text{min}}-\epsilon_x) + \beta\lambda_2 (E_y\[y^2\] + 2E\[y\]\epsilon_y + \epsilon_y^2)$$
-$$E_y\[\frac{df(x,y)}{dx}\] = 2\lambda_1 (x-x_{\text{min}}-\epsilon_x) + \beta\lambda_2 (s^2 + \epsilon_y^2)$$
-
-Now averaging over the noise $\epsilon_y$ and $\epsilon_x$:
-$$E_{\epsilon}\[E_y\[\frac{df(x,y)}{dx}\]\] = 2\lambda_1 (x-x_{\text{min}}) + \beta\lambda_2 (s^2 + \sigma_y^2)$$
-We see that the noise in the equilibrium distribution and the landscape noise itself induce spurious terms that push up away from the minimum $x_\text{min}$. Setting this expected derivative to $0$, we can compute the equilibrium point of sgd down the valley for a given noise level:
-$$0= 2\lambda_1 (x-x_{\text{min}}) + \beta\lambda_2 (s^2 + \sigma_y^2)$$
-$$x_{\text{min}}-x= \frac{\beta\lambda_2}{2\lambda_1} (s^2 + \sigma_y^2)$$
-
-And so obtain a surprising prediction: lowering the equilibrium variance $s^2$ is not enough to make us go down the valley all the way. We also need the landscape noise $\sigma_y^2$ to go down to zero. In nn training terms: lowering the learning rate (lowering only $s^2$) is not totally equivalent to increasing the batch size (lowering both $s^2$ and $\sigma_y^2$)
-
-The expected loss contribution from the narrowing valley direction will be:
-
-$$E\[\lambda_1(x-x_{\text{min}})^2\] = \frac{\beta^2\lambda_2^2}{4\lambda_1} (s^2 + \sigma_y^2)^2$$
-
-Which contains a squared dependence on the variances, and hence a quadratic dependence on the batch size. The loss in the narrowing directions goes like $1/\text{batch}^2$.
-
-This phenomenon might explain why low batch sizes generalise better: using low learning rate at low batch sizes lets us perfectly optimise the positive-eigenvalue directions, but gets us stuck partway down the narrowing valleys because of the above effect. If the narrowing valleys correspond to directions which learn overfitted features, then getting stuck halfway would actually be desirable. That is, *we should not want* to fall down the valley, but it's the price we pay for needing to optimise the positive-$\lambda$ directions. 
-
-Notice that we've found an exception to SGD convergence! How is this possible, is the SGD proof incorrect? Well, no, the proof says we will converge to a point where the expected gradient is 0, and that is indeed what we find, it's just that the point at which $E\[\nabla f\] = 0$ is not a local minimum of our function.
-
-### The multivariate extension to the narrowing valley model
+### Linear model
 
 
-The simplest way to generalise the narrowing valley model to n dimensions is to assume that all eigenvalues increase by the same multiplicative function (which is really a taylor expansion of an unknown "sharpening" function):
+Suppose, that we expand the model into $f(x) = h(x)g(x)$, where $g(x)$ is quadratic, and we approximate $h(x)$ to first order around the minimum (and set $h(0)=1$ in full generality), then, we get the following:
 
-$$f(\mathbf{x}) = \mathbf{x}^T Q^T \bigg(\Lambda \cdot (1+|\beta^T (\mathbf{x} - \mathbf{x}_0)|)\bigg) Q \mathbf{x}$$
-Where $Q$ is an orthonormal matrix, $\Lambda$ is a diagonal matrix with all positive components. 
+$$f(\mathbf{x}) = (1+(\beta^T (\mathbf{x} - \mathbf{x}_0))) \cdot \frac{1}{2}\bigg((\mathbf{x}-\mathbf{x}_0)^T H (\mathbf{x}-\mathbf{x}_0)\bigg)$$
 
-Questions: what does this model predict for the negative eigenvalues? does this predict changing eigenvectors? Does this reproduce the effects we've seen with the 2D toy model.
+$$\nabla_x f(\mathbf{x}) = (1+(\beta^T (\mathbf{x} - \mathbf{x}_0))) \cdot \bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) + \frac{1}{2}\bigg((\mathbf{x}-\mathbf{x}_0)^T H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta$$
 
-## 9. Conclusion and Further Questions <a name="9-conclusion"></a>
+$$\nabla^2_x f(\mathbf{x}) = (1+(\beta^T (\mathbf{x} - \mathbf{x}_0)))H + \bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta^T + \beta \bigg(H(\mathbf{x}-\mathbf{x}_0)\bigg)^T$$
+
+This model has the same minimum as the usual quadratic approximation, and has the same hessian at the minimum itself, but the hessian changes for small displacements from the minimum, by an amount given by:
+
+$$\Delta H = (\beta^T (\mathbf{x} - \mathbf{x}_0))H + \bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta^T + \beta \bigg(H(\mathbf{x}-\mathbf{x}_0)\bigg)^T $$
+
+These changes are to first order in $\mathbf{x}-\mathbf{x}_0$, we can do perturbation theory in that parameter to find how the spectrum is changing near the minimum.
+
+### Computing Hessian Spectrum Changes with Perturbation Theory
+
+
+From the perturbation theory of linear operators, the first order change in an eigenvalue $\lambda$ will simply be 
+
+$$\delta \lambda =  v_{\lambda}^T \Delta H v_{\lambda}$$
+$$\delta \lambda = (\beta^T (\mathbf{x} - \mathbf{x}_0))\lambda + v_{\lambda}^T\bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta^Tv_{\lambda} + v_{\lambda}^T\beta \bigg(H(\mathbf{x}-\mathbf{x}_0)\bigg)^T v_{\lambda}$$
+
+$(\beta^T (\mathbf{x} - \mathbf{x}_0))\lambda + 2\lambda \bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x}_0)\bigg) \bigg(\beta^Tv_{\lambda}\bigg)$$
+
+$$   \lambda' = \lambda \bigg( 1 + \beta^T (\mathbf{x} - \mathbf{x}_0) + 2\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x}_0)\bigg) \bigg(\beta^Tv_{\lambda}\bigg)\bigg)$$
+
+
+## 10. Conclusion and Further Questions <a name="9-conclusion"></a>
 
 Future directions:
 - Why does it take so long to optimise neural networks? Can use the narrowing valley hypothesis to build a model which lets us accurately predict the loss given a learning rate schedule and optimisation algorithm?

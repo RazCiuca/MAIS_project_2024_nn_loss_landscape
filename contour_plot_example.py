@@ -29,8 +29,11 @@ def get_min_t(x,y):
 def func_to_plot(x,y):
 
     # return 5*np.log(dist_squared+1) * (-1/(3*(np.abs(t)-1.1))) + 0.2 * (t-0.8)**2
-    # return np.log(0.2*(x-0.8)**2 + y**2 * np.exp(5*x+1) + 1)
-    return np.log(0.2 * (x - 0.8) ** 2 + y ** 2 * (1+50*x) + 1)
+    # return np.log(0.2*(x-0.8)**2 + y**2 * np.exp(5*(x)+1) + 1)
+    # return np.log((1+np.exp(x-5))*(0.1 * (x - 5) ** 2 + 5*y ** 2)  + 1)
+    return (np.exp((x-5)/5))*(0.04 * (x - 5) ** 2 + 5*y ** 2)
+
+    # return np.log(0.2 * (x - 0.8) ** 2 + y ** 2 * (1+20*x) + 1)
 
 def find_gradient(x,y):
 
@@ -74,9 +77,9 @@ if __name__ == "__main___":
 
 if __name__ == "__main__":
 
-    delta = 0.005
-    x = np.arange(0, 1, delta)
-    y = np.arange(-0.2, 0.2, delta)
+    delta = 0.02
+    x = np.arange(0, 6, delta)
+    y = np.arange(-4, 4, delta)
     X, Y = np.meshgrid(x, y)
 
     Z = np.array([func_to_plot(x,y) for x,y in zip(X.flatten(), Y.flatten())]).reshape(X.shape)
@@ -88,12 +91,12 @@ if __name__ == "__main__":
     # ====================================================
 
     fig, ax = plt.subplots()
-    cs = ax.contour(X, Y, Z, levels=80)
+    cs = ax.contour(X, Y, Z, levels=40)
 
     # x2 = np.arange(0, 1, 0.01)
     # y2 = x2 - x2**2
     # ax.plot(x2, y2, label='valley')
-    ax.scatter(np.array([0.8]), np.array([0]), color='red', label='minimum')
+    ax.scatter(np.array([5]), np.array([0]), color='red', label='minimum')
 
     # ====================================================
     # plotting gradients on graph
@@ -108,10 +111,10 @@ if __name__ == "__main__":
     # ====================================================
     # plotting where grad_x is negative
     # ====================================================
-    x, y = np.meshgrid(np.arange(0, 1.0, 0.001), np.arange(-0.2, 0.2, 0.001))
-    gradients = np.array([find_gradient(x, y) for x, y in zip(x.flatten(), y.flatten())])
-    neg_grad_x = np.array([(x[0] < 0) for x in gradients]).reshape(x.shape)
-    cs2 = ax.contourf(x, y, neg_grad_x, cmap='coolwarm', alpha=0.7, label='negative x gradient')
+    # x, y = np.meshgrid(np.arange(0, 6.0, 0.01), np.arange(-4, 4, 0.01))
+    # gradients = np.array([find_gradient(x, y) for x, y in zip(x.flatten(), y.flatten())])
+    # neg_grad_x = np.array([(x[0] < 0) for x in gradients]).reshape(x.shape)
+    # cs2 = ax.contourf(x, y, neg_grad_x, cmap='coolwarm', alpha=0.7, label='negative x gradient')
 
     # ====================================================
     # plotting the eigenvectors on the graph
@@ -140,12 +143,12 @@ if __name__ == "__main__":
     # ====================================================
     # plotting a contourf plot of where there are negative eigenvalues
     # ====================================================
-    # X, Y = np.meshgrid(np.arange(0, 1.0, 0.001), np.arange(-0.2, 0.2, 0.001))
-    # eigenstuff = [find_hessian_eigvecs(x, y) for x, y in zip(X.flatten(), Y.flatten())]
-    # neg_eigen_locs = np.array([np.sum(x[0] < 0)*2-1 for x in eigenstuff]).reshape(X.shape)
-    # max_eigen = np.array([x[0].max() for x in eigenstuff]).reshape(X.shape)
-    #
-    # cs2 = ax.contourf(X, Y, neg_eigen_locs, cmap='coolwarm', alpha=0.6, label='negative eigenvalues')
+    X, Y = np.meshgrid(np.arange(0, 6.0, 0.05), np.arange(-4, 4, 0.05))
+    eigenstuff = [find_hessian_eigvecs(x, y) for x, y in zip(X.flatten(), Y.flatten())]
+    neg_eigen_locs = np.array([np.sum(x[0] < 0)*2-1 for x in eigenstuff]).reshape(X.shape)
+    max_eigen = np.array([x[0].max() for x in eigenstuff]).reshape(X.shape)
+
+    cs2 = ax.contourf(X, Y, neg_eigen_locs, cmap='coolwarm', alpha=0.6, label='negative eigenvalues')
     # cs2 = ax.contourf(X, Y, max_eigen, cmap='coolwarm', alpha=0.6, levels=20)
 
     ax.legend()

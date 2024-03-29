@@ -164,11 +164,21 @@ if __name__ == "__main__":
 
     true_std = std_min * explore_scales * 2 / n_explore
 
+    from scipy.stats import linregress
+
+    mask = eigvals_computed > 1e-2
+    x = np.log(eigvals_computed[mask])
+    y = (true_std[mask])
+
+    reg = linregress(x, y)
+    print(reg)
+
     plt.scatter(eigvals_computed.numpy(), true_std.numpy(), color='blue', alpha=0.1)
     plt.xlabel('eigenvalue')
     plt.ylabel('minimum std')
     plt.title('$\sigma$ of min location vs eigenvalue')
     plt.xscale('log')
+    plt.yscale('log')
     plt.show()
 
     # ======================================================================

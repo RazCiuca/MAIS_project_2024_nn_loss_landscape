@@ -1,4 +1,26 @@
 
+3 pieces of evidence:
+- negative eigenvalues persist despite their 1D instability
+- at equilibrium with a given learning rate, they are at a maximum of the neg-eigenvector line searches
+- the positive spetrum doesn't change much when we optimise high-eigen directions, but the negative spectrum does decrease uniformly
+
+
+
+Working Title:
+Beyond the Quadratic Approximation: Explaining why Deep Learning Hessians Have Negative Eigenvalues
+
+
+negative eigenvalues explanation
+
+Here's the novel contribution:
+- We show that the equilibrium distribution of SGD with a narrow valley stabilises at a local minimum of the negative
+    eigenvalues
+- People think that the negative eigenvalues of the Hessian are caused by saddle-like structures, but they're wrong.
+    they are caused by narrowing valleys, not saddles. That's why they don't get optimised. And that's why the loss
+    decreases when noise decreases
+- The narrowing valley directions are the ones that cause overfitting.
+
+
 - are we falling into the same sharp valley in different draws of batches?
     -> i.e. if we're at equilibrium at some learning rate, and we pick various different
        points to drop the learning rate, do we end up down the same valley?

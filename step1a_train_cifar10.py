@@ -72,11 +72,11 @@ if __name__ == "__main__":
     test_data_x = test_data_x.float()
     test_data_x = (test_data_x - x_mean) / (1e-7 + x_std)
 
-    lr = 1e-1
+    lr = 1e-2
     weight_decay = 1e-3
     grad_clipping = 0.1
-    batch_size = 512
-    n_epoch = 500
+    batch_size = 512*40
+    n_epoch = 500*40
     n_data = data_x.size(0)
     n_iter = int(n_epoch * data_x.size(0) / batch_size)
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     model = ResNet9(3, 10, expand_factor=1)
     print(f"number of parameters in model: {model.get_vectorized_params().shape}")
-    optimizer = t.optim.SGD(model.parameters(), lr=lr, momentum=0.97, weight_decay=weight_decay)
+    optimizer = t.optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=weight_decay)
     loss_fn = nn.CrossEntropyLoss()
 
     # send things to the proper device
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         model.train()
 
         # sample batch, send to gpu
-        n_diff_between_batch = 256
+        n_diff_between_batch = batch_size
         i1 = (iter*n_diff_between_batch) % n_data
         i2 = i1 + batch_size
         batch_indices = all_indices[i1:i2]
