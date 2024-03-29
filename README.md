@@ -375,10 +375,7 @@ where $v_{\lambda}$ is the eigenvector of $H$ with eigenvalue $\lambda$. So we g
 
 $$\delta \lambda = (\beta^T (\mathbf{x} - \mathbf{x}_0))\lambda + v_{\lambda}^T\bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta^Tv_{\lambda} + v_{\lambda}^T\beta \bigg(H(\mathbf{x}-\mathbf{x}_0)\bigg)^T v_{\lambda}$$
 
-$$(\beta^T (\mathbf{x} - \mathbf{x}_0))\lambda + 2\lambda \bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x}_0)\bigg) \bigg(\beta^Tv_{\lambda}\bigg)$$
-
-$$   \lambda' = \lambda \bigg( 1 + \beta^T (\mathbf{x} - \mathbf{x}_0) + 2\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x}_0)\bigg) \bigg(\beta^Tv_{\lambda}\bigg)\bigg)$$
-
+$$\lambda' = \lambda \bigg( 1 + \beta^T (\mathbf{x} - \mathbf{x}_0) + 2\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x}_0)\bigg) \bigg(\beta^Tv_{\lambda}\bigg)\bigg)$$
 
 ## 10. Conclusion and Further Questions <a name="9-conclusion"></a>
 
