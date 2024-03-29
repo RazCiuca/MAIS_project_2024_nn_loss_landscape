@@ -373,12 +373,10 @@ $$\delta \lambda =  v_{\lambda}^T (\Delta H) v_{\lambda}$$
 
 where $v_{\lambda}$ is the eigenvector of $H$ with eigenvalue $\lambda$. So we get the following:
 
-$$\delta\lambda = (\beta^T (\mathbf{x} - \mathbf{x}_0 )) 
-
-\lambda + v_{\lambda}^T \bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg)
-
-\beta^T v_{\lambda} + v_{\lambda}^T\beta v_{\lambda}\bigg( H(\mathbf{x} - \mathbf{x}_0) \bigg)^T$$
-
+```
+\delta\lambda = (\beta^T (\mathbf{x} - \mathbf{x}_0 ))\lambda + v_{\lambda}^T\bigg(H (\mathbf{x}-\mathbf{x}_0)\bigg) \beta^T v_{\lambda} + v_{\lambda}^T\beta \bigg(H(\mathbf{x}-\mathbf{x}_0)\bigg)^T v_{\lambda}\\
+\lambda' = \lambda \bigg( 1 + \beta^T (\mathbf{x} - \mathbf{x}_0) + 2\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x}_0)\bigg) \bigg(\beta^Tv_{\lambda}\bigg)\bigg)
+```
 ## 10. Conclusion and Further Questions <a name="9-conclusion"></a>
 
 Future directions:
