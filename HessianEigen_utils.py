@@ -212,6 +212,40 @@ def sgd_in_subspace(model, loss_fn, inputs, targets, eigvals, eigvecs, device, n
 
     return model.shape_vec_as_params_no_names(flat_params + optim_x @ mask_vec)
 
+def evaluate_model(params, model, inputs, targets, loss_fn):
+
+    with t.no_grad():
+        ave_loss = 0
+
+        z = model.shape_vec_as_params(params)
+        preds = functional_call(model, z, inputs)
+        loss = loss_fn(preds, targets)
+        ave_loss += loss.item()
+
+        return ave_loss
+
+def model_contour_plot(model, get_params, inputs, targets, loss_fn, x_vals, y_vals):
+
+    X, Y = np.meshgrid(x_vals, y_vals)
+    Z = np.zeros([len(x_vals), len(y_vals)])
+
+    init_params = model.get_vectorized_params()
+
+    for i1, x in enumerate(x_vals):
+        for i2, y in enumerate(y_vals):
+
+            # params = init_params + x * vec_x + y * vec_y
+            params = get_params(x, y)
+
+            loss = evaluate_model(params, model, inputs, targets, loss_fn)
+
+            Z[i1,i2] = loss
+
+            print(f"done ({i1}/{len(x_vals)},{i2}/{len(y_vals)}), loss:{loss:.6f}")
+
+    return X, Y, Z
+
+
 
 class HessianCompute:
 

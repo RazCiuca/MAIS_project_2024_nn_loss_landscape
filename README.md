@@ -378,7 +378,7 @@ $$\delta\lambda = (\beta^T (\mathbf{x} - \mathbf{x_0} ))\lambda + v_{\lambda}^T\
 
 $$\lambda' = \lambda \bigg( 1 + \beta^T (\mathbf{x} - \mathbf{x_0}) + 2\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x_0})\bigg) \bigg(\beta^Tv_{\lambda}\bigg)\bigg)$$
 
-Each eigenvalue $\lambda$ is scaled by a factor which depends first of all on $\beta^T (\mathbf{x} - \mathbf{x_0})$, which doesn't depend on $\lambda$, and second on $bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x_0})\bigg) \bigg(\beta^Tv_{\lambda}\bigg)$, which is going to depend on the details of the equilibrium distribution of $\mathbf{x}-\mathbf{x_0}$. 
+Each eigenvalue $\lambda$ is scaled by a factor which depends first of all on $\beta^T (\mathbf{x} - \mathbf{x_0})$, which doesn't depend on $\lambda$, and second on $\bigg(v_{\lambda}^T (\mathbf{x}-\mathbf{x_0})\bigg) \bigg(\beta^Tv_{\lambda}\bigg)$, which is going to depend on the details of the equilibrium distribution of $\mathbf{x}-\mathbf{x_0}$. 
 
 ## 10. Conclusion and Further Questions <a name="10-conclusion"></a>
 

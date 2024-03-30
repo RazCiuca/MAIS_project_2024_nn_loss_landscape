@@ -4,13 +4,28 @@
 - at equilibrium with a given learning rate, they are at a maximum of the neg-eigenvector line searches
 - the positive spetrum doesn't change much when we optimise high-eigen directions, but the negative spectrum does decrease uniformly
 
+===============================================
+Next major clue:
+===============================================
+- Edge of Stability only happens with weight decay!!!!??
+- without weight decay top eigenvalues are much smaller, by a factor of 7 or 8, it hovers at 1 until the end
+- though we still have negative eigenvalues even without weight decay, and they behave as expected, decreasing
+  in magnitude as we drop the learning rate
 
+- weight decay massively helps the edge of stability to manifest accurately.
+- if we start with a given lr, then the eigenvalue will jump right away to that value, but it'll be stuck there,
+    it won't go up much at successive lr decreases. Weight decay is needed for that.
 
-Working Title:
-Beyond the Quadratic Approximation: Explaining why Deep Learning Hessians Have Negative Eigenvalues
+- much more complicated. If we start with a given learning rate, it does happen, but the function doesn't sharpen
+  after that if we decrease the learning rate, it only does so if we add weight-decay
 
+- weird: the max eigenvalue at averaged networks is quite a bit smaller than the value of a random selection at equilibrium
 
+- possible reason: the second derivative down the valley is absurdly tiny, and we need weight decay to help us down
+
+=================================================
 negative eigenvalues explanation
+=================================================
 
 Here's the novel contribution:
 - We show that the equilibrium distribution of SGD with a narrow valley stabilises at a local minimum of the negative

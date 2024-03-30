@@ -41,7 +41,7 @@ if __name__ == "__main__":
     data_x = data_x.to(device)
     data_y = data_y.to(device)
 
-    top_k = 2000
+    top_k = 100
     iter = 10000
 
     n_data = data_x.size(0)
@@ -82,7 +82,9 @@ if __name__ == "__main__":
     top_eigvals, top_eigvecs = t.load("models/resnet9_cifar10/valley_testing/init_top_eigstuff.pth")
     bottom_eigvals, bottom_eigvecs = t.load("models/resnet9_cifar10/valley_testing/0_optim_bottom_eigstuff.pth")
 
-    print(f"total negative power: {bottom_eigvals[bottom_eigvals<0].sum():.6f}")
+    # print(f"total negative power: {bottom_eigvals[bottom_eigvals<0].sum():.6f}")
+    print(f"total top power: {top_eigvals[::-1][:top_k].sum():.6f}")
+
 
     # ======================================================================
     # iterate logarithmically and optimise in subspace
@@ -90,9 +92,9 @@ if __name__ == "__main__":
 
     n_steps = 30
 
-    # ns = np.ceil(np.exp(np.arange(2, np.log(top_k), np.log(top_k)/n_steps))).astype(np.int64)
-    # ns = [50, 100, 250, 500, 1000, 2000]
-    ns = [25, 12, 6]
+    ns = np.ceil(np.exp(np.arange(2, np.log(top_k), np.log(5000)/n_steps))).astype(np.int64)
+    ns = [12, 25, 50, 100, 250, 500, 1000, 2000]
+    # ns = [25, 12, 6]
 
     for n in ns:
 
@@ -109,11 +111,18 @@ if __name__ == "__main__":
 
         model1.to(device)
 
-        bottom_eigvals, bottom_eigvecs = top_k_hessian_eigen(model1, data_x, data_y, loss_fn, top_k=top_k, mode='SA',
-                                                       batch_size=None, v0=bottom_eigvecs[:, 0])
+        # bottom_eigvals, bottom_eigvecs = top_k_hessian_eigen(model1, data_x, data_y, loss_fn, top_k=top_k, mode='SA',
+        #                                                batch_size=None, v0=bottom_eigvecs[:, 0])
 
-        neg_power = bottom_eigvals[bottom_eigvals < 0].sum()
+        local_top_eigvals, local_top_eigvecs = top_k_hessian_eigen(model1, data_x, data_y, loss_fn, top_k=top_k, mode='LA',
+                                                             batch_size=None, v0=top_eigvecs[:, -1])
 
-        print(f"total negative power after {n}: {neg_power:.6f}")
+        # neg_power = bottom_eigvals[bottom_eigvals < 0].sum()
+        top_power = local_top_eigvals.sum()
+
+
+        print(f"total top power after {n}: {top_power:.6f}")
         # save new eigenvectors
-        t.save((bottom_eigvals, bottom_eigvecs), f"models/resnet9_cifar10/valley_testing/{n}_optim_bottom_eigstuff_power_{neg_power:.3f}.pth")
+        # t.save((bottom_eigvals, bottom_eigvecs), f"models/resnet9_cifar10/valley_testing/{n}_optim_bottom_eigstuff_power_{neg_power:.3f}.pth")
+        t.save((local_top_eigvals, local_top_eigvecs), f"models/resnet9_cifar10/valley_testing/{n}_optim_top_eigstuff_power_{top_power:.3f}.pth")
+
