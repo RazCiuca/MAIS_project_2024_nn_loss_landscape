@@ -172,9 +172,9 @@ if __name__ == "__main__":
 
         return p
 
-    for i in range(30):
+    for i in range(1):
 
-        batch_indices = np.random.permutation(np.arange(data_x.shape[0]))[:512]
+        batch_indices = np.random.permutation(np.arange(data_x.shape[0]))
         new_data_x = data_x[batch_indices]
         new_data_y = data_y[batch_indices]
 
@@ -182,17 +182,18 @@ if __name__ == "__main__":
 
         z_min_log = np.log(Z.min())
         z_max_log = np.log(Z.max())
-        levels = np.exp(np.arange(z_min_log, z_max_log, (z_max_log - z_min_log) / 50))
+        # levels = np.exp(np.arange(z_min_log, z_max_log, (z_max_log - z_min_log) / 50))
 
         spline = RectBivariateSpline(x_vals, y_vals, Z)
 
         fig, ax = plt.subplots()
-        CS = ax.contour(X, Y, Z.T, levels=levels)
+        levels = np.arange(z_min_log, z_max_log, (z_max_log - z_min_log) / 50)
+        CS = ax.contour(X, Y, np.log(Z.T), levels=levels)
         cbar = fig.colorbar(CS)
         # ax.clabel(CS, inline=True, fontsize=10)
-        ax.set_title('Contour plot of narrowing valley, random batch of size 512')
-        plt.savefig(f'./images/narrow_valley_plots/{i}.png')
-
+        ax.set_title('Contour plot of narrowing valley, log loss')
+        # plt.savefig(f'./images/narrow_valley_plots/{i}.png')
+        plt.show()
     # plt.show()
 
 

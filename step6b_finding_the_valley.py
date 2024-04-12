@@ -96,8 +96,8 @@ def train_cifar10(model, device, data_train, data_test, lr, batch_size, n_iter):
 
     model_ave = ResNet9(3, 10, expand_factor=1).to(device)
 
-    local_top_eigvecs = None
-    ave_net_top_eigvecs = None
+    local_bottom_eigvecs = None
+    ave_net_bottom_eigvecs = None
 
     for iter in range(n_iter):
 
@@ -113,7 +113,7 @@ def train_cifar10(model, device, data_train, data_test, lr, batch_size, n_iter):
         # compute loss and append to list
         loss = loss_fn(preds, targets)
 
-        if iter % 500 == 0 and iter != 0:
+        if iter % 2000 == 0 and iter != 0:
 
             plot_average = loss_fn(model(inputs), targets)
 
@@ -126,15 +126,15 @@ def train_cifar10(model, device, data_train, data_test, lr, batch_size, n_iter):
             # local_top_eigvals, local_top_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k=top_k,
             #                                                            mode='LA',
             #                                                            batch_size=2000, v0=local_top_eigvecs.flatten() if local_top_eigvecs is not None else None)
-            #
-            # ave_net_top_eigvals, ave_net_top_eigvecs = top_k_hessian_eigen(model_ave, data_x, data_y, loss_fn, top_k=top_k,
-            #                                                            mode='LA',
-            #                                                            batch_size=2000, v0=ave_net_top_eigvecs.flatten() if ave_net_top_eigvecs is not None else None)
+
+            ave_net_bottom_eigvals, ave_net_bottom_eigvecs = top_k_hessian_eigen(model_ave, data_x, data_y, loss_fn, top_k=top_k,
+                                                                       mode='SA',
+                                                                       batch_size=20000, v0=ave_net_bottom_eigvecs.flatten() if ave_net_bottom_eigvecs is not None else None)
 
             # print
             # print(f"i:{iter}/{n_iter} --- lr:{lr:.2e}s --- loss:{plot_average.item():.7f} --- "
             #       f"local top eigen: {local_top_eigvals.sum().item():.6f} --- ave top eigen: {ave_net_top_eigvals.sum().item():.6f}")
-            print(f"i:{iter}/{n_iter} --- loss:{plot_average.item():.7f}")
+            print(f"i:{iter}/{n_iter} --- loss:{plot_average.item():.7f} --- ave_net bottom eigval: {ave_net_bottom_eigvals.item():.6f}")
 
         # backwards and take optim step
         optimizer.zero_grad()
@@ -144,15 +144,15 @@ def train_cifar10(model, device, data_train, data_test, lr, batch_size, n_iter):
         average_params = average_params + model.get_vectorized_params().detach().clone()
 
     top_k = 1
-    local_top_eigvals, local_top_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k=top_k,
-                                                               mode='LA',
-                                                               batch_size=2000, v0=local_top_eigvecs.flatten() if local_top_eigvecs is not None else None)
+    # local_top_eigvals, local_top_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k=top_k,
+    #                                                            mode='LA',
+    #                                                            batch_size=2000, v0=local_top_eigvecs.flatten() if local_top_eigvecs is not None else None)
+    #
+    # ave_net_top_eigvals, ave_net_top_eigvecs = top_k_hessian_eigen(model_ave, data_x, data_y, loss_fn, top_k=top_k,
+    #                                                            mode='LA',
+    #                                                            batch_size=2000, v0=ave_net_top_eigvecs.flatten() if ave_net_top_eigvecs is not None else None)
 
-    ave_net_top_eigvals, ave_net_top_eigvecs = top_k_hessian_eigen(model_ave, data_x, data_y, loss_fn, top_k=top_k,
-                                                               mode='LA',
-                                                               batch_size=2000, v0=ave_net_top_eigvecs.flatten() if ave_net_top_eigvecs is not None else None)
-
-    print(f" lr:{lr:.2e}s local top eigen: {local_top_eigvals.sum().item():.6f} --- ave top eigen: {ave_net_top_eigvals.sum().item():.6f}")
+    # print(f" lr:{lr:.2e}s local top eigen: {local_top_eigvals.sum().item():.6f} --- ave top eigen: {ave_net_top_eigvals.sum().item():.6f}")
 
     return model, (average_params/n_iter)
 
@@ -166,11 +166,11 @@ if __name__ == "__main__":
     data_train = torchvision.datasets.CIFAR10('../datasets/', train=True, download=True)
     data_test = torchvision.datasets.CIFAR10('../datasets/', train=False, download=True)
 
-    lrs = [0.95**(i) for i in range(0, 130)]
+    # lrs = [0.95**(i) for i in range(0, 130)]
 
-    # lrs = [1.0, 5e-1, 2.5e-1, 1e-1, 5e-2, 2.5e-2, 1e-2, 5e-3, 2.5e-3, 1e-3, 5e-4, 2.5e-4, 1e-4]
+    lrs = [1.0, 5e-1, 2.5e-1, 1e-1, 5e-2, 2.5e-2, 1e-2, 5e-3, 2.5e-3, 1e-3, 5e-4, 2.5e-4, 1e-4]
     batch_size = 512
-    n_iter = 2000
+    n_iter = 50000
 
     # ====================== Resnet MODEL =============================
 

@@ -1,8 +1,15 @@
 
+- if the edge of stability explains negative eigenvalues, then if there's no edge of stability, say we don't use
+    weight decay, then there shouldn't be negative eigenvalues, correct?
+
+- suppose you model the landscape as a baseline power law quadratic
+
 3 pieces of evidence:
 - negative eigenvalues persist despite their 1D instability
 - at equilibrium with a given learning rate, they are at a maximum of the neg-eigenvector line searches
 - the positive spetrum doesn't change much when we optimise high-eigen directions, but the negative spectrum does decrease uniformly
+
+- other clue: this is not an output softmax temperature thing, that doesn't seem to matter
 
 ===============================================
 Next major clue:
@@ -21,7 +28,7 @@ Next major clue:
 
 - weird: the max eigenvalue at averaged networks is quite a bit smaller than the value of a random selection at equilibrium
 
-- possible reason: the second derivative down the valley is absurdly tiny, and we need weight decay to help us down
+- possible reason: the second derivative down the valley is absurdly tiny, and we need weight decay to help us down?
 
 =================================================
 negative eigenvalues explanation

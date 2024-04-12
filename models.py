@@ -13,6 +13,8 @@ def conv_block(in_channels, out_channels, pool=False):
     if pool: layers.append(nn.AvgPool2d(2))
     return nn.Sequential(*layers)
 
+
+
 class ResNet9(nn.Module):
     def __init__(self, in_channels, num_classes, expand_factor=1):
         super().__init__()
@@ -75,6 +77,15 @@ class ResNet9(nn.Module):
             index += n
 
         return params
+
+
+# class ResNet9Normalized(ResNet9):
+#     def __init__(self, in_channels, num_classes, expand_factor=1):
+#         super().__init__(in_channels, num_classes, expand_factor)
+#
+#     def forward(self, xb):
+#         y = super().forward(xb)
+#         return y / (5*y.std(dim=1, keepdim=True))
 
 if __name__ == "__main__":
 

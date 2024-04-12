@@ -74,7 +74,7 @@ if __name__ == "__main__":
     test_data_x = (test_data_x - x_mean) / (1e-7 + x_std)
 
     lr = 1.0
-    weight_decay = 1e-3
+    weight_decay = 0*1e-3
     # grad_clipping = 0.1
     batch_size = 512
     n_epoch = 500
@@ -149,12 +149,17 @@ if __name__ == "__main__":
             plot_average = loss_fn(model(inputs), targets)
 
             top_k = 1
-            local_top_eigvals, local_top_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k=top_k,
-                                                                       mode='LA',
+            local_top_eigvals, local_top_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn,
+                                                                             top_k=top_k,
+                                                                             mode='LA',
+                                                                             batch_size=2000)
+            local_bottom_eigvals, local_bottom_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k=top_k,
+                                                                       mode='SA',
                                                                        batch_size=2000)
 
             print(f"i:{iter}/{n_iter} --- time remaining:{time_remaining:.1f}s --- loss:{plot_average.item():.7f} "
-                  f"--- top-1:{last_accuracy[0]:.4f} top eigen: {local_top_eigvals[0].item():.6f}, expected: {2/lr:.3f}")
+                  f"--- top-1:{last_accuracy[0]:.4f} top eigen: {local_top_eigvals[0].item():.6f}, expected: {2/lr:.3f}"
+                  f" bottom eigen: {local_bottom_eigvals[0].item():.6f}")
 
         # if iter%100 == 0:
         #     t.save(model.state_dict(), f'models/resnet9_cifar10/model_{iter}.pth')
