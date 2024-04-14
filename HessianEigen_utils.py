@@ -47,24 +47,35 @@ def hvp_model(tangents, model, data_x, data_y, loss_fn, chunk_size=8):
     return total_hvp
 
 
-def hvp_model_np(tangents_np, model, data_x, data_y, loss_fn):
+def hvp_model_np(tangents_np, model, data_x, data_y, loss_fn, chunk_size=None):
     tangents = t.from_numpy(tangents_np).to('cuda').squeeze()
     tangents = tuple(model.shape_vec_as_params_no_names(tangents))
 
     # send data to gpu
-    data_x = data_x.cuda()
-    data_y = data_y.cuda()
+    data_x_tot = data_x.cuda()
+    data_y_tot = data_y.cuda()
+    n_data = data_x_tot.size(0)
 
-    # defining the function to send to hvp
-    def fn_to_optim(*x):
-        z = [{name: p} for (p, name) in zip(x, model.param_names)]
+    res = np.zeros(tangents_np.shape[0])
 
-        preds = functional_call(model, z, data_x)
-        return loss_fn(preds, data_y)
+    n_iter = 1 if chunk_size is None else (int(n_data/chunk_size)+1)
+    for i in range(n_iter):
 
-    hessian_col = vhp(fn_to_optim, tuple(model.parameters()), tangents)[1]
+        data_x = data_x_tot[i*chunk_size: (i+1)*chunk_size]
+        data_y = data_y_tot[i*chunk_size: (i+1)*chunk_size]
 
-    return t.cat([x.flatten() for x in hessian_col]).detach().cpu().numpy()
+        # defining the function to send to hvp
+        def fn_to_optim(*x):
+            z = [{name: p} for (p, name) in zip(x, model.param_names)]
+
+            preds = functional_call(model, z, data_x)
+            return loss_fn(preds, data_y)
+
+        hessian_col = vhp(fn_to_optim, tuple(model.parameters()), tangents)[1]
+
+        res += t.cat([x.flatten() for x in hessian_col]).detach().cpu().numpy() * data_x.size(0)
+
+    return res/n_data
 
 def grad_model(model, data_x, data_y, loss_fn):
 
@@ -80,7 +91,7 @@ def grad_model(model, data_x, data_y, loss_fn):
 
     return t.cat([x.flatten() for x in gradients]).detach().cpu()
 
-def top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k = 100, mode='LA', batch_size=None, v0=None):
+def top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k = 100, mode='LA', batch_size=None, v0=None, chunk_size=None):
     """
     computes top-k eigenvalues and eigenvectors of the hessian of model, with given data,
     possibly with finite batch size
@@ -93,7 +104,7 @@ def top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k = 100, mode='LA', 
 
 
     linop = LinearOperator((model.n_params, model.n_params),
-                            matvec = lambda x: hvp_model_np(x, model, data_x, data_y, loss_fn))
+                            matvec = lambda x: hvp_model_np(x, model, data_x, data_y, loss_fn, chunk_size))
 
     eigvals, eigvecs = eigsh(linop, k=top_k, which=mode, v0=v0)
 

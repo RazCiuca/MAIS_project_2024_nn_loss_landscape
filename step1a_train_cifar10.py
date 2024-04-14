@@ -22,7 +22,10 @@ def get_validation(model, loss_fn, data_x, targets, top_k = 5):
 
         top_k_accuracy = []
 
-        preds = model(data_x)
+        chunk_size = 512
+        n_data = data_x.size(0)
+
+        preds = t.cat([model(data_x[i*chunk_size:(i+1)*chunk_size]) for i in range(int(n_data/chunk_size)+1) ], dim=0)
         validation_loss = loss_fn(preds, targets)
 
         sorted_preds = t.argsort(preds, dim=1)
@@ -56,10 +59,10 @@ if __name__ == "__main__":
     # data_x = data_x.float()
 
     # t.save((data_x, data_y), 'models/resnet9_cifar10/enlarged_dataset.pth')
-    # data_x, data_y = t.load( 'models/resnet9_cifar10/enlarged_dataset.pth')
+    data_x, data_y = t.load( 'models/resnet9_cifar10/enlarged_dataset.pth')
 
-    data_x = t.from_numpy(data_train.data).float()
-    data_y = t.LongTensor(data_train.targets)
+    # data_x = t.from_numpy(data_train.data).float()
+    # data_y = t.LongTensor(data_train.targets)
 
     x_mean = data_x.mean(dim=0)
     x_std = data_x.std(dim=0)
@@ -73,8 +76,8 @@ if __name__ == "__main__":
     test_data_x = test_data_x.float()
     test_data_x = (test_data_x - x_mean) / (1e-7 + x_std)
 
-    lr = 1.0
-    weight_decay = 0*1e-3
+    lr = 0.1
+    weight_decay = 1e-3
     # grad_clipping = 0.1
     batch_size = 512
     n_epoch = 500
@@ -83,7 +86,7 @@ if __name__ == "__main__":
 
     # ====================== Resnet MODEL =============================
 
-    model = ResNet9(3, 10, expand_factor=1)
+    model = ResNet9(3, 10, expand_factor=8)
     print(f"number of parameters in model: {model.get_vectorized_params().shape}")
     optimizer = t.optim.SGD(model.parameters(), lr=lr, momentum=0.0, weight_decay=weight_decay)
     loss_fn = nn.CrossEntropyLoss()
@@ -141,7 +144,7 @@ if __name__ == "__main__":
 
         # plot_average = loss.item() if plot_average is None else plot_gamma*plot_average + (1-plot_gamma)*loss.item()
 
-        if iter%500 == 0 and iter != 0:
+        if iter%100 == 0 and iter != 0:
             stop = time.time()
 
             time_remaining = (stop - start) * ((n_iter-iter)/iter)
@@ -149,13 +152,19 @@ if __name__ == "__main__":
             plot_average = loss_fn(model(inputs), targets)
 
             top_k = 1
-            local_top_eigvals, local_top_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn,
-                                                                             top_k=top_k,
-                                                                             mode='LA',
-                                                                             batch_size=2000)
-            local_bottom_eigvals, local_bottom_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k=top_k,
-                                                                       mode='SA',
-                                                                       batch_size=2000)
+            if iter % 5000 == 0:
+                local_top_eigvals, local_top_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn,
+                                                                                 top_k=top_k,
+                                                                                 mode='LA',
+                                                                                 batch_size=10000,
+                                                                                 chunk_size=512)
+                local_bottom_eigvals, local_bottom_eigvecs = top_k_hessian_eigen(model, data_x, data_y, loss_fn, top_k=top_k,
+                                                                           mode='SA',
+                                                                           batch_size=10000,
+                                                                           chunk_size=512)
+            else:
+                local_top_eigvals = [t.zeros(1)]
+                local_bottom_eigvals = [t.zeros(1)]
 
             print(f"i:{iter}/{n_iter} --- time remaining:{time_remaining:.1f}s --- loss:{plot_average.item():.7f} "
                   f"--- top-1:{last_accuracy[0]:.4f} top eigen: {local_top_eigvals[0].item():.6f}, expected: {2/lr:.3f}"
@@ -168,28 +177,28 @@ if __name__ == "__main__":
         # changing learning rate once in a while
         if iter == 10000:
             for g in optimizer.param_groups:
-                g['lr'] /= 2
+                g['lr'] /= 10
 
-            lr /= 2
+            lr /= 10
             # optimizer = t.optim.SGD(model.parameters(), lr=lr, momentum=0.0, weight_decay=weight_decay)
 
         if iter == 20000:
             for g in optimizer.param_groups:
-                g['lr'] /= 2
+                g['lr'] /= 10
 
-            lr /= 2
+            lr /= 10
             # optimizer = t.optim.SGD(model.parameters(), lr=lr, momentum=0.0, weight_decay=weight_decay)
 
         if iter == 30000:
             for g in optimizer.param_groups:
-                g['lr'] /= 2
-            lr /= 2
+                g['lr'] /= 10
+            lr /= 10
             # optimizer = t.optim.SGD(model.parameters(), lr=lr, momentum=0.0, weight_decay=weight_decay)
 
         if iter == 40000:
             for g in optimizer.param_groups:
-                g['lr'] /= 2
-            lr /= 2
+                g['lr'] /= 10
+            lr /= 10
             # optimizer = t.optim.SGD(model.parameters(), lr=lr, momentum=0.0, weight_decay=weight_decay)
 
         # backwards and take optim step
@@ -213,5 +222,5 @@ if __name__ == "__main__":
     # plot training loss, test loss and save figure
     plt.plot(np.array(plot_iters[:-1]), np.array(plot_losses), color='b')
     plt.yscale('log')
-    plt.savefig('./figures/small_resnet_cifar10_sgd_default_no_clip.png')
+    plt.savefig('./figures/small_resnet_cifar10_sgd_augmented_no_clip.png')
 
