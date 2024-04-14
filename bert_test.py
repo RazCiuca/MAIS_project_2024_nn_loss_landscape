@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 # Load dataset
 logging.info("Loading the Wikipedia dataset...")
 dataset = load_dataset("wikipedia", "20220301.en")['train'].shuffle()
-subset_dataset = dataset.select(range(10000))  # Using a subset for quick processing
+subset_dataset = dataset.select(range(20000))  # Using a subset for quick processing
 
 # Initialize tokenizer and model
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
@@ -30,7 +30,7 @@ data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=True, m
 
 # DataLoader
 logging.info("Setting up DataLoader...")
-train_dataloader = DataLoader(tokenized_datasets, batch_size=16, collate_fn=data_collator)
+train_dataloader = list(DataLoader(tokenized_datasets, batch_size=16, collate_fn=data_collator))
 
 # Training model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -118,6 +118,6 @@ def top_k_hessian_eigen_bert(model, dataloader, top_k = 100, mode='LA',v0=None, 
 
 eigvals, eigvecs = top_k_hessian_eigen_bert(model, train_dataloader, top_k=1, mode='SA')
 
-t.save((eigvals, eigvecs), './bert_stuff/smallest_eigs_10000_docs')
+t.save((eigvals, eigvecs), './bert_stuff/smallest_eigs_20000_docs_const_labels')
 
 print(f"smallest eigenval for BERT: {eigvals}")
